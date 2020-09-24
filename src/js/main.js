@@ -17,8 +17,8 @@ downKey.press = () => {
     console.log("press down")
 };
 
-const texture = PIXI.Texture.from('assets/bunny.png');
-const bunny = new PIXI.Sprite(texture);
+// const texture = PIXI.Texture.from('assets/bunny.png');
+// const bunny = new PIXI.Sprite(texture);
 
 // Player
 const player = PIXI.Sprite.from(PIXI.Texture.WHITE);
