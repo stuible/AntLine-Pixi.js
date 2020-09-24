@@ -1,0 +1,26 @@
+{
+  "name": "antline",
+  "version": "1.0.0",
+  "description": "Ant Lion redesign written in Pixi.js ontop of Webpack",
+  "main": "src/js/main.js",
+  "scripts": {
+    "dev": "webpack-dev-server --config webpack.dev.js",
+    "clean": "rimraf dist",
+    "prebuild": "npm run clean",
+    "build": "webpack --config webpack.prod.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "pixi.js": "^5.3.3"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^6.1.1",
+    "html-webpack-plugin": "^4.5.0",
+    "imagemin-webpack-plugin": "^2.4.2",
+    "webpack": "^4.44.2",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0",
+    "webpack-merge": "^5.1.4"
+  }
+}
