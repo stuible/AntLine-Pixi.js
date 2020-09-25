@@ -1,5 +1,9 @@
 import * as PIXI from 'pixi.js'
-import keyboard from './keyboard'
+import keyboard from './controls/keyboard'
+import { sample, cloneDeep } from 'lodash';
+
+import player from './sprites/player';
+import antlion from './sprites/antlion';
 
 const app = new PIXI.Application({
     width: 1080,
@@ -7,6 +11,7 @@ const app = new PIXI.Application({
     backgroundColor: 0x1099bb,
     view: document.querySelector('#game')
 });
+
 
 //Key Inputs
 let downKey = keyboard("ArrowDown");
@@ -17,58 +22,157 @@ downKey.press = () => {
     console.log("press down")
 };
 
-// const texture = PIXI.Texture.from('assets/bunny.png');
-// const bunny = new PIXI.Sprite(texture);
+//Terrain
+let tunnelContainer = new PIXI.Container();
+app.stage.addChild(tunnelContainer);
+
+const terrainGridSize = 100;
+let terrainGridWidth = player.position.x + app.renderer.width / terrainGridSize;
+const terrainGridHeight = app.renderer.height / terrainGridSize;
+
+const pathCells = [];
+
+const currentPathIndex = {
+    x: 0,
+    y: 3,
+}
+
+function generateNewPathCells() {
+    terrainGridWidth = (player.position.x + app.renderer.width) / terrainGridSize;
+    while (currentPathIndex.x < terrainGridWidth) {
+        console.log("generating new path cell");
+        const cell = createPathCell(currentPathIndex.x, currentPathIndex.y)
+        tunnelContainer.addChild(cell);
+        pathCells.push(cell);
+
+        let possiblePathDirections = [];
+
+        // If path is at the bottom of the screen
+        if (currentPathIndex.y <= 0) {
+            possiblePathDirections = ["up", "right"]
+        }
+        // If Path is at the top of the game
+        else if (currentPathIndex.y >= terrainGridHeight) {
+            possiblePathDirections = ["down", "right"]
+        }
+        // If the path is somewhere in between
+        else {
+            possiblePathDirections = ["up", "down", "right"]
+        }
+
+        switch (sample(possiblePathDirections)) {
+            case "up":
+                currentPathIndex.y++;
+                break;
+            case "down":
+                currentPathIndex.y--;
+                break;
+            case "right":
+                currentPathIndex.x++;
+                break;
+            default:
+                currentPathIndex.x++
+                break;
+        }
+
+    }
+}
+
+
+
+
+
+function insideTunnel(sprite) {
+    let foundIntersectingCell = false;
+    pathCells.forEach(cell => {
+        if (rectsIntersect(cell, sprite)) foundIntersectingCell = true;
+    });
+    return foundIntersectingCell;
+}
+
+function rectsFullyIntersect(a, b) {
+    // let aBox = a.getBounds();
+    // let bBox = b.getBounds();
+
+    // // console.log(aBox)
+    // // console.log(bBox)
+
+    // return  aBox.x + aBox.width > bBox.x &&
+    //         aBox.x < bBox.x + bBox.width &&
+    //         aBox.y + aBox.height > bBox.y &&
+    //         aBox.y < bBox.y + bBox.height;
+}
+
+function rectsIntersect(a, b) {
+    let aBox = a.getBounds();
+    let bBox = b.getBounds();
+    return aBox.x + aBox.width > bBox.x &&
+        aBox.x < bBox.x + bBox.width &&
+        aBox.y + aBox.height > bBox.y &&
+        aBox.y < bBox.y + bBox.height;
+}
+
+function createPathCell(x, y) {
+    const terrain = PIXI.Sprite.from(PIXI.Texture.WHITE);
+    terrain.anchor.set(0);
+    terrain.width = terrainGridSize;
+    terrain.height = terrainGridSize;
+    terrain.y = terrainGridSize * y;
+    terrain.x = terrainGridSize * x;
+    terrain.tint = "#FFFFFF";
+    return terrain;
+}
+
+
 
 // Player
-const player = PIXI.Sprite.from(PIXI.Texture.WHITE);
-player.anchor.set(0.5);
-player.width = 50;
-player.height = 50;
-player.y = 200;
-player.x = 600;
-player.tint = 0xFF0000;
 app.stage.addChild(player);
-
 let playerSpeed = 5;
 
 
 // Ant Lion
-const antlion = PIXI.Sprite.from(PIXI.Texture.WHITE);
-antlion.anchor.set(0.5);
-antlion.width = 75;
-antlion.height = 75;
-antlion.y = 200;
-antlion.x = 50;
-antlion.tint = "#eb4034";
-app.stage.addChild(antlion);
-
+// app.stage.addChild(antlion);
 let antlionSpeed = 2;
 
 
-// bunny.anchor.set(0.5);
-// bunny.x = 160
-// bunny.y = 160
-// app.stage.addChild(bunny);
-
 app.ticker.add((delta) => {
 
+    // FOllow player with "camera"
+    app.stage.pivot.x = player.position.x;
+    app.stage.pivot.y = player.position.y;
+    app.stage.position.x = app.renderer.width / 2;
+    app.stage.position.y = app.renderer.height / 2;
+
+    //Generate New path
+    generateNewPathCells();
+
+
+    let playerClone = cloneDeep(player);
+
+    let playSpeedCurrent = playerSpeed;
+    if (!insideTunnel(player)) playSpeedCurrent = 0;
+
     if (downKey.isDown) {
-        player.y += playerSpeed;
+        playerClone.y += playSpeedCurrent;
+        if (insideTunnel(playerClone)) player.y += playSpeedCurrent;
     }
     if (upKey.isDown) {
-        player.y -= playerSpeed;
+        playerClone.y -= playSpeedCurrent;
+        if (insideTunnel(playerClone)) player.y -= playSpeedCurrent;
     }
     if (leftKey.isDown) {
-        player.x -= playerSpeed;
+        playerClone.x -= playSpeedCurrent;
+        if (insideTunnel(playerClone)) player.x -= playSpeedCurrent;
     }
     if (rightKey.isDown) {
-        player.x += playerSpeed;
+        playerClone.x += playSpeedCurrent;
+        if (insideTunnel(playerClone)) player.x += playSpeedCurrent;
     }
 
+    // Move Ant Lion towards player
     var run = player.x - antlion.x;
     var rise = player.y - antlion.y;
-    var length = Math.sqrt((rise * rise) + (run * run)); //pseudocode
+    var length = Math.sqrt((rise * rise) + (run * run));
     var unitX = run / length;
     var unitY = rise / length;
 
