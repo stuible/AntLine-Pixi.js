@@ -90,9 +90,17 @@ function generateNewPathCells() {
             // console.log({x: currentWallXIndex, y: yIndex})
             // console.log(pathCells.find(cell => cell.y == yIndex * terrainGridSize && cell.x == currentWallXIndex * terrainGridSize))
             if (!pathCells.find(cell => cell.y == yIndex * terrainGridSize && cell.x == currentWallXIndex * terrainGridSize)) {
-                const wall = createWallCell(currentWallXIndex, yIndex)
-                wallContainer.addChild(wall);
-                wallCells.push(wall);
+
+                // if (pathCells.find(cell =>
+                //     (cell.y == (yIndex + 1) * terrainGridSize && cell.x == currentWallXIndex * terrainGridSize) ||
+                //     (cell.y == (yIndex - 1) * terrainGridSize && cell.x == currentWallXIndex * terrainGridSize)
+                // )) {
+                    const wall = createWallCell(currentWallXIndex, yIndex)
+                    wallContainer.addChild(wall);
+                    wallCells.push(wall);
+                // }
+
+
             }
 
         }
