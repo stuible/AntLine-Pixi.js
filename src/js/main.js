@@ -86,7 +86,7 @@ function prunePathCells() {
 
     for (let index = 0; index < pathCells.length - cellsToKeep; index++) {
         tunnelContainer.removeChild(pathCells[index])
-        
+
     }
 
     pathCells = pathCells.slice(-1 * cellsToKeep);
@@ -151,10 +151,20 @@ let antlionSpeed = 2;
 app.ticker.add((delta) => {
 
     // FOllow player with "camera"
-    app.stage.pivot.x = player.position.x;
-    app.stage.pivot.y = player.position.y;
+    let cameraDestination = {
+        x: player.position.x + 100,
+        y: player.position.y
+    }
+
+    // Weighted bias for camera follow spring function
+    let bias = 0.96;
+
+    app.stage.pivot.x = app.stage.pivot.x * bias + cameraDestination.x * (1 - bias);
+    app.stage.pivot.y = app.stage.pivot.y * bias + cameraDestination.y * (1 - bias);
     app.stage.position.x = app.renderer.width / 2;
     app.stage.position.y = app.renderer.height / 2;
+
+
 
     //Generate New path
     generateNewPathCells();
