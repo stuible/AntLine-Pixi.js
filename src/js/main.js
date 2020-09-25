@@ -30,7 +30,7 @@ const terrainGridSize = 100;
 let terrainGridWidth = player.position.x + app.renderer.width / terrainGridSize;
 const terrainGridHeight = app.renderer.height / terrainGridSize;
 
-const pathCells = [];
+let pathCells = [];
 
 const currentPathIndex = {
     x: 0,
@@ -78,6 +78,19 @@ function generateNewPathCells() {
     }
 }
 
+function prunePathCells() {
+    let maxViewableCells = player.position.x + app.renderer.width / terrainGridSize;
+
+    //Only keep the past x cells
+    const cellsToKeep = 75;
+
+    for (let index = 0; index < pathCells.length - cellsToKeep; index++) {
+        tunnelContainer.removeChild(pathCells[index])
+        
+    }
+
+    pathCells = pathCells.slice(-1 * cellsToKeep);
+}
 
 
 
@@ -145,6 +158,7 @@ app.ticker.add((delta) => {
 
     //Generate New path
     generateNewPathCells();
+    prunePathCells();
 
 
     let playerClone = cloneDeep(player);
