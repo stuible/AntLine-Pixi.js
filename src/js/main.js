@@ -24,21 +24,29 @@ downKey.press = () => {
 
 //Terrain
 let tunnelContainer = new PIXI.Container();
+let wallContainer = new PIXI.Container();
+
+app.stage.addChild(wallContainer);
 app.stage.addChild(tunnelContainer);
+
 
 const terrainGridSize = 100;
 let terrainGridWidth = player.position.x + app.renderer.width / terrainGridSize;
 const terrainGridHeight = app.renderer.height / terrainGridSize;
 
 let pathCells = [];
+let wallCells = [];
 
 const currentPathIndex = {
     x: 0,
     y: 3,
 }
 
+let currentWallXIndex = 0;
+
 function generateNewPathCells() {
-    terrainGridWidth = (player.position.x + app.renderer.width) / terrainGridSize;
+    terrainGridWidth = (player.position.x + ((app.renderer.width + 100) / 2)) / terrainGridSize;
+
     while (currentPathIndex.x < terrainGridWidth) {
         console.log("generating new path cell");
         const cell = createPathCell(currentPathIndex.x, currentPathIndex.y)
@@ -74,22 +82,43 @@ function generateNewPathCells() {
                 currentPathIndex.x++
                 break;
         }
-
     }
+
+    // Draw walls
+    while (currentWallXIndex < terrainGridWidth) {
+        for (let yIndex = -1; yIndex < terrainGridHeight + 1; yIndex++) {
+            // console.log({x: currentWallXIndex, y: yIndex})
+            // console.log(pathCells.find(cell => cell.y == yIndex * terrainGridSize && cell.x == currentWallXIndex * terrainGridSize))
+            if (!pathCells.find(cell => cell.y == yIndex * terrainGridSize && cell.x == currentWallXIndex * terrainGridSize)) {
+                const wall = createWallCell(currentWallXIndex, yIndex)
+                wallContainer.addChild(wall);
+                wallCells.push(wall);
+            }
+
+        }
+        currentWallXIndex++;
+    }
+
+
+
 }
 
 function prunePathCells() {
     let maxViewableCells = player.position.x + app.renderer.width / terrainGridSize;
 
     //Only keep the past x cells
-    const cellsToKeep = 75;
+    const pathCellsToKeep = 75;
+    const wallCellsToKeep = 100;
 
-    for (let index = 0; index < pathCells.length - cellsToKeep; index++) {
+    for (let index = 0; index < pathCells.length - pathCellsToKeep; index++) {
         tunnelContainer.removeChild(pathCells[index])
-
+    }
+    for (let index = 0; index < wallCells.length - wallCellsToKeep; index++) {
+        wallContainer.removeChild(wallCells[index])
     }
 
-    pathCells = pathCells.slice(-1 * cellsToKeep);
+    pathCells = pathCells.slice(-1 * pathCellsToKeep);
+    wallCells = wallCells.slice(-1 * wallCellsToKeep);
 }
 
 
@@ -97,10 +126,10 @@ function prunePathCells() {
 
 function insideTunnel(sprite) {
     let foundIntersectingCell = false;
-    pathCells.forEach(cell => {
+    wallCells.forEach(cell => {
         if (rectsIntersect(cell, sprite)) foundIntersectingCell = true;
     });
-    return foundIntersectingCell;
+    return !foundIntersectingCell;
 }
 
 function rectsFullyIntersect(a, b) {
@@ -136,6 +165,17 @@ function createPathCell(x, y) {
     return terrain;
 }
 
+function createWallCell(x, y) {
+    const terrain = PIXI.Sprite.from(PIXI.Texture.WHITE);
+    terrain.anchor.set(0);
+    terrain.width = terrainGridSize;
+    terrain.height = terrainGridSize;
+    terrain.y = terrainGridSize * y;
+    terrain.x = terrainGridSize * x;
+    terrain.tint = Math.floor(Math.random() * 16777215);
+    return terrain;
+}
+
 
 
 // Player
@@ -144,7 +184,7 @@ let playerSpeed = 5;
 
 
 // Ant Lion
-// app.stage.addChild(antlion);
+app.stage.addChild(antlion);
 let antlionSpeed = 2;
 
 
