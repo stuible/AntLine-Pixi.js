@@ -25,9 +25,9 @@ downKey.press = () => {
 //Terrain
 let tunnelContainer = new PIXI.Container();
 let wallContainer = new PIXI.Container();
-
-app.stage.addChild(wallContainer);
 app.stage.addChild(tunnelContainer);
+app.stage.addChild(wallContainer);
+
 
 
 const terrainGridSize = 100;
@@ -45,7 +45,7 @@ const currentPathIndex = {
 let currentWallXIndex = 0;
 
 function generateNewPathCells() {
-    terrainGridWidth = (player.position.x + ((app.renderer.width + 100) / 2)) / terrainGridSize;
+    terrainGridWidth = (player.position.x + ((app.renderer.width + 400) / 2)) / terrainGridSize;
 
     while (currentPathIndex.x < terrainGridWidth) {
         console.log("generating new path cell");
@@ -83,24 +83,68 @@ function generateNewPathCells() {
                 break;
         }
     }
+    // Return path cell based on X, Y location on grid, if it exists
+    function getPathCell(x, y) {
+        return pathCells.find(cell => cell.y == y * terrainGridSize && cell.x == x * terrainGridSize)
+    }
 
     // Draw walls
-    while (currentWallXIndex < terrainGridWidth) {
-        for (let yIndex = -1; yIndex < terrainGridHeight + 1; yIndex++) {
-            // console.log({x: currentWallXIndex, y: yIndex})
-            // console.log(pathCells.find(cell => cell.y == yIndex * terrainGridSize && cell.x == currentWallXIndex * terrainGridSize))
-            if (!pathCells.find(cell => cell.y == yIndex * terrainGridSize && cell.x == currentWallXIndex * terrainGridSize)) {
+    while (currentWallXIndex < terrainGridWidth - 1) {
+        // Iterate over the height of the terrain grid, one cell at a time until we find our first path cell
+        for (let yIndex = -1; yIndex < terrainGridHeight + 5; yIndex++) {
 
-                // if (pathCells.find(cell =>
-                //     (cell.y == (yIndex + 1) * terrainGridSize && cell.x == currentWallXIndex * terrainGridSize) ||
-                //     (cell.y == (yIndex - 1) * terrainGridSize && cell.x == currentWallXIndex * terrainGridSize)
-                // )) {
-                    const wall = createWallCell(currentWallXIndex, yIndex)
-                    wallContainer.addChild(wall);
-                    wallCells.push(wall);
-                // }
+            // Runs if we've found a cell with a tunnel in it
+            if (getPathCell(currentWallXIndex, yIndex)) {
 
+                // Draw a wall above the first tunnel cell found
+                const upperWall = createWallCell(currentWallXIndex, yIndex - 1);
+                wallContainer.addChild(upperWall);
+                wallCells.push(upperWall);
 
+                // Check if we need to build a wall to the left
+                if (!getPathCell(currentWallXIndex - 1, yIndex)) {
+                    const leftWall = createWallCell(currentWallXIndex - 1, yIndex);
+                    wallContainer.addChild(leftWall);
+                    wallCells.push(leftWall);
+                }
+
+                // Check if we need to build a wall to the right
+                if (!getPathCell(currentWallXIndex + 1, yIndex)) {
+                    const rightWall = createWallCell(currentWallXIndex + 1, yIndex);
+                    wallContainer.addChild(rightWall);
+                    wallCells.push(rightWall);
+                }
+
+                // Now lets move down until we find the end of of verticle path
+                for (let pathScanYIndex = yIndex; pathScanYIndex < terrainGridHeight  + 5; pathScanYIndex++) {
+
+                    // If there's still a path here, lets see if we need to draw side walls
+                    if (getPathCell(currentWallXIndex, pathScanYIndex)) {
+                        // Check if we need to build a wall to the left
+                        if (!getPathCell(currentWallXIndex - 1, pathScanYIndex)) {
+                            const leftWall = createWallCell(currentWallXIndex - 1, pathScanYIndex);
+                            wallContainer.addChild(leftWall);
+                            wallCells.push(leftWall);
+                        }
+
+                        // Check if we need to build a wall to the right
+                        if (!getPathCell(currentWallXIndex + 1, pathScanYIndex)) {
+                            const rightWall = createWallCell(currentWallXIndex + 1, pathScanYIndex);
+                            wallContainer.addChild(rightWall);
+                            wallCells.push(rightWall);
+                        }
+                    }
+                    // If there isn't a path lets draw our bottom wall
+                    else {
+                        const bottomWall = createWallCell(currentWallXIndex, pathScanYIndex);
+                        wallContainer.addChild(bottomWall);
+                        wallCells.push(bottomWall);
+                        
+                        pathScanYIndex = 1000;
+                    }
+                }
+
+                break;
             }
 
         }
@@ -115,8 +159,8 @@ function prunePathCells() {
     let maxViewableCells = player.position.x + app.renderer.width / terrainGridSize;
 
     //Only keep the past x cells
-    const pathCellsToKeep = 75;
-    const wallCellsToKeep = 100;
+    const pathCellsToKeep = 70;
+    const wallCellsToKeep = 60;
 
     for (let index = 0; index < pathCells.length - pathCellsToKeep; index++) {
         tunnelContainer.removeChild(pathCells[index])
