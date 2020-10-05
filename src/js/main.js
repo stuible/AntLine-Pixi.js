@@ -24,7 +24,7 @@ downKey.press = () => {
 };
 
 // Terrain
-const terrain = new Terrain({ player: player, width: app.renderer.width - 600, height: app.renderer.height - 200, grid: 15 })
+const terrain = new Terrain({ player: player, width: app.renderer.width, height: app.renderer.height, grid: 100 })
 app.stage.addChild(terrain.container);
 
 // Player

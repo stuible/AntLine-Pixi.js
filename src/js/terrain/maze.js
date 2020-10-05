@@ -7,14 +7,14 @@ export default class {
         this.width = width;
 
         this.path = [];
-        this.pathIndex = 0;
+        this.pathCalcIndex = 0;
 
         this.currentPathGeneratorIndex = {
             x: 0,
             y: 3,
         }
 
-        this.previousPathGeneratorXIndex = this.currentPathGeneratorIndex.x;
+        this.previousPathGeneratorXIndex = this.currentPathGeneratorIndex.x - 1;
 
     }
 
@@ -24,12 +24,9 @@ export default class {
         if (newPathsGenerated) {
             this.calculateWalls();
 
-            console.log(this.previousPathGeneratorXIndex)
-            console.log(this.path.filter(cell => cell.x > this.previousPathGeneratorXIndex - 1));
+            const newPaths = this.path.filter(cell => cell.x > this.previousPathGeneratorXIndex && cell.x < this.currentPathGeneratorIndex.x - 1);
 
-            const newPaths = this.path.filter(cell => cell.x > this.previousPathGeneratorXIndex - 1);
-
-            this.previousPathGeneratorXIndex = this.currentPathGeneratorIndex.x;
+            this.previousPathGeneratorXIndex = this.currentPathGeneratorIndex.x - 2;
 
             return newPaths;
         }
@@ -38,33 +35,43 @@ export default class {
 
     }
 
+    pruneMaze(){
+        
+    }
+
     calculateWalls() {
-        this.path.forEach(cell => {
+        // let topCalcIndex = 0;
+        this.path.forEach((cell, index) => {
 
-            // Don't generate walls for path cells i the furthest righthand X column
-            // console.log(this.currentPathGeneratorIndex.x)
-            // if (cell.x < 27) {
-                const walls = {
-                    top: false, bottom: false, left: false, right: false
-                }
-
-                //Check if cell exists above, if not add a wall
-                if (!this.getCell(cell.x, cell.y - 1)) walls.top = true;
-
-                //Check if cell exists below, if not add a wall
-                if (!this.getCell(cell.x, cell.y + 1)) walls.bottom = true;
-
-                //Check if cell exists to the left, if not add a wall
-                if (!this.getCell(cell.x - 1, cell.y)) walls.left = true;
-
-                //Check if cell exists to the right, if not add a wall
-                if (!this.getCell(cell.x + 1, cell.y)) walls.right = true;
+            // if (!cell.x > this.currentPathGeneratorIndex.x){
+            //     console.log("stip this cell: " + cell.x)
+            //     return;
+            // };
 
 
-                this.updateMazeCellWalls(cell.x, cell.y, walls);
-            // }
+            const walls = {
+                top: false, bottom: false, left: false, right: false
+            }
+
+            //Check if cell exists above, if not add a wall
+            if (!this.getCell(cell.x, cell.y - 1)) walls.top = true;
+
+            //Check if cell exists below, if not add a wall
+            if (!this.getCell(cell.x, cell.y + 1)) walls.bottom = true;
+
+            //Check if cell exists to the left, if not add a wall
+            if (!this.getCell(cell.x - 1, cell.y)) walls.left = true;
+
+            //Check if cell exists to the right, if not add a wall
+            if (!this.getCell(cell.x + 1, cell.y)) walls.right = true;
+
+            this.updateMazeCellWalls(cell.x, cell.y, walls);
+
+            // topIndex = index;
 
         });
+
+        // this.pathCalcIndex += topIndex;
     }
 
     generatePath() {
