@@ -4,6 +4,8 @@ import { sample } from 'lodash'
 import tunnel from './tunnel';
 import wall from './wall';
 
+import maze from './maze';
+
 
 export default class {
     constructor({ player, grid, height, width }) {
@@ -16,7 +18,6 @@ export default class {
         this.height = height;
         this.width = width;
 
-
         this.terrainContainer.addChild(this.tunnelContainer);
         this.terrainContainer.addChild(this.wallContainer);
 
@@ -26,6 +27,8 @@ export default class {
 
         this.pathCells = [];
         this.wallCells = [];
+
+        this.maze = new maze({ height: this.gridHeight, width: this.gridWidth });
 
         this.currentPathIndex = {
             x: 0,
@@ -44,112 +47,49 @@ export default class {
         this.prunePathCells();
     }
 
+    // Return path cell based on X, Y location on grid, if it exists
+    getPathCell(x, y) {
+        return this.pathCells.find(cell => cell.y == y * this.gridSize && cell.x == x * this.gridSize)
+    }
+
+    getWallCell(x, y) {
+        return this.wallCells.find(cell => cell.y == y * this.gridSize && cell.x == x * this.gridSize)
+    }
+
     generateNewPathCells() {
-        this.gridWidth = (this.player.position.x + ((this.width + 400) / 2)) / this.gridSize;
-        console.log({ "this.width": this.width, "this.gridWidth": this.gridWidth })
-        while (this.currentPathIndex.x < this.gridWidth) {
-            console.log("generating new path cell");
-            const cell = this.createPathCell(this.currentPathIndex.x, this.currentPathIndex.y)
+
+        const mazePath = this.maze.generate((this.player.position.x + ((this.width + 400) / 2)) / this.gridSize);
+
+        if (mazePath.length > 0) console.log(mazePath);
+
+        if(mazePath) mazePath.forEach(cellData => {
+            if(!cellData.walls) return;
+            const cell = this.createPathCell(cellData.x, cellData.y)
             this.tunnelContainer.addChild(cell);
             this.pathCells.push(cell);
 
-            let possiblePathDirections = [];
-
-            // If path is at the bottom of the screen
-            if (this.currentPathIndex.y <= 0) {
-                possiblePathDirections = ["up", "right"]
+            if (cellData.walls.top) {
+                const wall = this.createWallCell(cellData.x, cellData.y - 1);
+                this.wallContainer.addChild(wall);
+                this.wallCells.push(wall);
             }
-            // If Path is at the top of the game
-            else if (this.currentPathIndex.y >= this.gridHeight) {
-                possiblePathDirections = ["down", "right"]
+            if (cellData.walls.bottom) {
+                const wall = this.createWallCell(cellData.x, cellData.y + 1);
+                this.wallContainer.addChild(wall);
+                this.wallCells.push(wall);
             }
-            // If the path is somewhere in between
-            else {
-                possiblePathDirections = ["up", "down", "right"]
+            if (cellData.walls.left) {
+                const wall = this.createWallCell(cellData.x - 1, cellData.y);
+                this.wallContainer.addChild(wall);
+                this.wallCells.push(wall);
+            }
+            if (cellData.walls.right) {
+                const wall = this.createWallCell(cellData.x + 1, cellData.y);
+                this.wallContainer.addChild(wall);
+                this.wallCells.push(wall);
             }
 
-            switch (sample(possiblePathDirections)) {
-                case "up":
-                    this.currentPathIndex.y++;
-                    break;
-                case "down":
-                    this.currentPathIndex.y--;
-                    break;
-                case "right":
-                    this.currentPathIndex.x++;
-                    break;
-                default:
-                    this.currentPathIndex.x++
-                    break;
-            }
-        }
-        // Return path cell based on X, Y location on grid, if it exists
-        const getPathCell = (x, y) => {
-            return this.pathCells.find(cell => cell.y == y * this.gridSize && cell.x == x * this.gridSize)
-        }
-
-        // Draw walls
-        while (this.currentWallXIndex < this.gridWidth - 1) {
-            // Iterate over the height of the terrain grid, one cell at a time until we find our first path cell
-            for (let yIndex = -1; yIndex < this.gridHeight + 5; yIndex++) {
-
-                // Runs if we've found a cell with a tunnel in it
-                if (getPathCell(this.currentWallXIndex, yIndex)) {
-
-                    // Draw a wall above the first tunnel cell found
-                    const upperWall = this.createWallCell(this.currentWallXIndex, yIndex - 1);
-                    this.wallContainer.addChild(upperWall);
-                    this.wallCells.push(upperWall);
-
-                    // Check if we need to build a wall to the left
-                    if (!getPathCell(this.currentWallXIndex - 1, yIndex)) {
-                        const leftWall = this.createWallCell(this.currentWallXIndex - 1, yIndex);
-                        this.wallContainer.addChild(leftWall);
-                        this.wallCells.push(leftWall);
-                    }
-
-                    // Check if we need to build a wall to the right
-                    if (!getPathCell(this.currentWallXIndex + 1, yIndex)) {
-                        const rightWall = this.createWallCell(this.currentWallXIndex + 1, yIndex);
-                        this.wallContainer.addChild(rightWall);
-                        this.wallCells.push(rightWall);
-                    }
-
-                    // Now lets move down until we find the end of of verticle path
-                    for (let pathScanYIndex = yIndex; pathScanYIndex < this.gridHeight + 5; pathScanYIndex++) {
-
-                        // If there's still a path here, lets see if we need to draw side walls
-                        if (getPathCell(this.currentWallXIndex, pathScanYIndex)) {
-                            // Check if we need to build a wall to the left
-                            if (!getPathCell(this.currentWallXIndex - 1, pathScanYIndex)) {
-                                const leftWall = this.createWallCell(this.currentWallXIndex - 1, pathScanYIndex);
-                                this.wallContainer.addChild(leftWall);
-                                this.wallCells.push(leftWall);
-                            }
-
-                            // Check if we need to build a wall to the right
-                            if (!getPathCell(this.currentWallXIndex + 1, pathScanYIndex)) {
-                                const rightWall = this.createWallCell(this.currentWallXIndex + 1, pathScanYIndex);
-                                this.wallContainer.addChild(rightWall);
-                                this.wallCells.push(rightWall);
-                            }
-                        }
-                        // If there isn't a path lets draw our bottom wall
-                        else {
-                            const bottomWall = this.createWallCell(this.currentWallXIndex, pathScanYIndex);
-                            this.wallContainer.addChild(bottomWall);
-                            this.wallCells.push(bottomWall);
-
-                            pathScanYIndex = 1000;
-                        }
-                    }
-
-                    break;
-                }
-
-            }
-            this.currentWallXIndex++;
-        }
+        })
 
     }
 

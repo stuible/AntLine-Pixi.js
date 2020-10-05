@@ -23,10 +23,8 @@ downKey.press = () => {
     console.log("press down")
 };
 
-
-
 // Terrain
-const terrain = new Terrain({ player: player, width: app.renderer.width, height: app.renderer.height, grid: 100 })
+const terrain = new Terrain({ player: player, width: app.renderer.width - 600, height: app.renderer.height - 200, grid: 15 })
 app.stage.addChild(terrain.container);
 
 // Player
@@ -36,7 +34,7 @@ let playerSpeed = 5;
 
 // Ant Lion
 app.stage.addChild(antlion);
-let antlionSpeed = 2;
+let antlionSpeed = 3;
 
 
 app.ticker.add((delta) => {
@@ -56,10 +54,8 @@ app.ticker.add((delta) => {
     app.stage.position.y = app.renderer.height / 2;
 
 
-
-    //Generate New path
+    //Generate New paths / walls
     terrain.update();
-
 
     let playerClone = cloneDeep(player);
 
