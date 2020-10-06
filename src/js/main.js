@@ -9,8 +9,9 @@ import antlion from './sprites/antlion';
 import Terrain from './terrain';
 
 const app = new PIXI.Application({
-    width: 1080,
-    height: 720,
+    // width: 1080,
+    // height: 720,
+    resizeTo: document.querySelector('#game-wrapper'),
     backgroundColor: 0x1099bb,
     view: document.querySelector('#game')
 });
@@ -21,10 +22,11 @@ let downKey = keyboard("ArrowDown");
 let upKey = keyboard("ArrowUp");
 let leftKey = keyboard("ArrowLeft");
 let rightKey = keyboard("ArrowRight");
-downKey.press = () => {
-    console.log("press down")
-};
+// downKey.press = () => {
+//     console.log("press down")
+// };
 
+// Global State
 const state = new  State({});
 
 // Player
