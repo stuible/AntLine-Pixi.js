@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js'
 import keyboard from './controls/keyboard'
 import { cloneDeep } from 'lodash';
 
-import player from './sprites/player';
+import Player from './sprites/player';
 import antlion from './sprites/antlion';
 import Terrain from './terrain';
 
@@ -23,13 +23,15 @@ downKey.press = () => {
     console.log("press down")
 };
 
+// Player
+const player = new Player({speed: 5});
+
 // Terrain
 const terrain = new Terrain({ player: player, width: app.renderer.width, height: app.renderer.height, grid: 100 })
 app.stage.addChild(terrain.container);
 
-// Player
-app.stage.addChild(player);
-let playerSpeed = 5;
+
+app.stage.addChild(player.sprite);
 
 
 // Ant Lion
@@ -57,10 +59,10 @@ app.ticker.add((delta) => {
     //Generate New paths / walls
     terrain.update();
 
-    let playerClone = cloneDeep(player);
+    let playerClone = cloneDeep(player.sprite);
 
-    let playSpeedCurrent = playerSpeed;
-    if (!terrain.insideTunnel(player)) playSpeedCurrent = 0;
+    let playSpeedCurrent = player.speed;
+    if (!terrain.insideTunnel(player.sprite)) playSpeedCurrent = 0;
 
     if (downKey.isDown) {
         playerClone.y += playSpeedCurrent;
@@ -79,8 +81,11 @@ app.ticker.add((delta) => {
         if (terrain.insideTunnel(playerClone)) player.x += playSpeedCurrent;
     }
 
+
+    // Get the next path cell to the right of the antlion, we'll use this to give the antlion a place to go
     let antlionTargetCell = terrain.maze.path.filter(cell => cell.x >= antlion.x / terrain.gridSize)[0]
 
+    // If theres a cell to move to, get its pixel location
     if (antlionTargetCell) {
         const antlionTarget = {
             x: (antlionTargetCell.x * terrain.gridSize) + terrain.gridSize / 2,
