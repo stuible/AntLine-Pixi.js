@@ -13,6 +13,17 @@ export default class {
         this.speed = speed;
     }
 
+    moveToward(x, y){
+        var run = x - this.x;
+        var rise = y - this.y;
+        var length = Math.sqrt((rise * rise) + (run * run));
+        var unitX = run / length;
+        var unitY = rise / length;
+
+        this.x += unitX * this.speed;
+        this.y += unitY * this.speed;
+    }
+
     get x() {
         return this.sprite.x;
     }

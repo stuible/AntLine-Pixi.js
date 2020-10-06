@@ -8,6 +8,9 @@ import Player from './sprites/player';
 import Antlion from './sprites/antlion';
 import Terrain from './terrain';
 
+import Camera from './camera';
+import UI from './ui';
+
 const app = new PIXI.Application({
     // width: 1080,
     // height: 720,
@@ -27,13 +30,19 @@ let rightKey = keyboard("ArrowRight");
 // };
 
 // Global State
-const state = new  State({});
+const state = new State({});
+
+//UI
+const ui = new UI(state);
+
+// Camera
+const camera = new Camera(app);
 
 // Player
 const player = new Player({speed: 5});
 
 // Ant Lion
-const antlion = new Antlion({speed: 3});
+const antlion = new Antlion({speed: 4.5});
 
 // Terrain
 const terrain = new Terrain({ player: player, width: app.renderer.width, height: app.renderer.height, grid: 100 })
@@ -47,46 +56,38 @@ app.stage.addChild(antlion.sprite);
 app.ticker.add((delta) => {
 
     // Add points as time passes
-    state.addPoints(delta / 50);
+    if(!state.gameOver) state.addPoints(delta / 50);
 
     // Follow player with "camera"
-    let cameraDestination = {
-        x: player.position.x + 100,
-        y: player.position.y
-    }
+    camera.moveToward(player);
 
-    
-    let bias = 0.96; // Weighted bias for camera follow spring function
-
-    app.stage.pivot.x = app.stage.pivot.x * bias + cameraDestination.x * (1 - bias);
-    app.stage.pivot.y = app.stage.pivot.y * bias + cameraDestination.y * (1 - bias);
-    app.stage.position.x = app.renderer.width / 2;
-    app.stage.position.y = app.renderer.height / 2;
-
+    //Update UI
+    ui.update();
 
     // Generate New paths & walls
     terrain.update();
 
     let playerClone = cloneDeep(player.sprite);
 
-    let playSpeedCurrent = player.speed;
-    // if (!terrain.insideTunnel(player.sprite)) playSpeedCurrent = 0;
-
     if (downKey.isDown) {
-        playerClone.y += playSpeedCurrent;
-        if (terrain.insideTunnel(playerClone)) player.y += playSpeedCurrent;
+        playerClone.y += player.speed;
+        if (terrain.insideTunnel(playerClone)) player.y += player.speed;
+        playerClone.y -= player.speed;
     }
     if (upKey.isDown) {
-        playerClone.y -= playSpeedCurrent;
-        if (terrain.insideTunnel(playerClone)) player.y -= playSpeedCurrent;
+        playerClone.y -= player.speed;
+        if (terrain.insideTunnel(playerClone)) player.y -= player.speed;
+        playerClone.y += player.speed;
     }
     if (leftKey.isDown) {
-        playerClone.x -= playSpeedCurrent;
-        if (terrain.insideTunnel(playerClone)) player.x -= playSpeedCurrent;
+        playerClone.x -= player.speed;
+        if (terrain.insideTunnel(playerClone)) player.x -= player.speed;
+        playerClone.x += player.speed;
     }
     if (rightKey.isDown) {
-        playerClone.x += playSpeedCurrent;
-        if (terrain.insideTunnel(playerClone)) player.x += playSpeedCurrent;
+        playerClone.x += player.speed;
+        if (terrain.insideTunnel(playerClone)) player.x += player.speed;
+        playerClone.x -= player.speed;
     }
 
     //Check if Player is touching Antlion
@@ -108,14 +109,7 @@ app.ticker.add((delta) => {
         // console.log(antlionTarget)
 
         // Move Ant Lion towards the next cell of the maze
-        var run = antlionTarget.x - antlion.x;
-        var rise = antlionTarget.y - antlion.y;
-        var length = Math.sqrt((rise * rise) + (run * run));
-        var unitX = run / length;
-        var unitY = rise / length;
-
-        antlion.x += unitX * antlion.speed;
-        antlion.y += unitY * antlion.speed;
+        antlion.moveToward(antlionTarget.x, antlionTarget.y);
     }
 
 });
