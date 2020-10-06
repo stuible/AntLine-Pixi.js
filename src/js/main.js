@@ -23,8 +23,6 @@ downKey.press = () => {
     console.log("press down")
 };
 
-
-
 // Terrain
 const terrain = new Terrain({ player: player, width: app.renderer.width, height: app.renderer.height, grid: 100 })
 app.stage.addChild(terrain.container);
@@ -36,7 +34,7 @@ let playerSpeed = 5;
 
 // Ant Lion
 app.stage.addChild(antlion);
-let antlionSpeed = 2;
+let antlionSpeed = 3;
 
 
 app.ticker.add((delta) => {
@@ -56,10 +54,8 @@ app.ticker.add((delta) => {
     app.stage.position.y = app.renderer.height / 2;
 
 
-
-    //Generate New path
+    //Generate New paths / walls
     terrain.update();
-
 
     let playerClone = cloneDeep(player);
 
@@ -83,13 +79,24 @@ app.ticker.add((delta) => {
         if (terrain.insideTunnel(playerClone)) player.x += playSpeedCurrent;
     }
 
-    // Move Ant Lion towards player
-    var run = player.x - antlion.x;
-    var rise = player.y - antlion.y;
-    var length = Math.sqrt((rise * rise) + (run * run));
-    var unitX = run / length;
-    var unitY = rise / length;
+    let antlionTargetCell = terrain.maze.path.filter(cell => cell.x >= antlion.x / terrain.gridSize)[0]
 
-    antlion.x += unitX * antlionSpeed;
-    antlion.y += unitY * antlionSpeed;
+    if (antlionTargetCell) {
+        const antlionTarget = {
+            x: (antlionTargetCell.x * terrain.gridSize) + terrain.gridSize / 2,
+            y: (antlionTargetCell.y * terrain.gridSize) + terrain.gridSize / 2
+        }
+        // console.log(antlionTarget)
+
+        // Move Ant Lion towards the next cell of the maze
+        var run = antlionTarget.x - antlion.x;
+        var rise = antlionTarget.y - antlion.y;
+        var length = Math.sqrt((rise * rise) + (run * run));
+        var unitX = run / length;
+        var unitY = rise / length;
+
+        antlion.x += unitX * antlionSpeed;
+        antlion.y += unitY * antlionSpeed;
+    }
+
 });
