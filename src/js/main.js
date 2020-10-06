@@ -102,7 +102,7 @@ window.onload = () => {
             // alert("YOU LOSE! SCORE: " + state.score);
             console.log("YOU LOSE! SCORE: " + state.score)
 
-            if (confirm("Play Again?")) {
+            if (confirm("Game Over !  |  SCORE: " + state.score + "  |  Play Again?")) {
                 location.reload();
               } else {
                 state.paused = true;
