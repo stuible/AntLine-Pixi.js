@@ -5,6 +5,7 @@ import { isTouching } from '../helpers/collision'
 
 import tunnel from './tunnel';
 import wall from './wall';
+import Powerup from './powerups';
 
 import maze from './maze';
 
@@ -16,12 +17,14 @@ export default class {
         this.terrainContainer = new PIXI.Container();
         this.tunnelContainer = new PIXI.Container();
         this.wallContainer = new PIXI.Container();
+        this.powerupContainer = new PIXI.Container();
 
         this.height = height;
         this.width = width;
 
         this.terrainContainer.addChild(this.tunnelContainer);
         this.terrainContainer.addChild(this.wallContainer);
+        this.terrainContainer.addChild(this.powerupContainer);
 
         this.gridSize = grid ? grid : 100;
         this.gridWidth = this.player.position.x + this.width / this.gridSize;
@@ -29,8 +32,11 @@ export default class {
 
         this.pathCells = [];
         this.wallCells = [];
+        this.powerupCells = [];
 
         this.maze = new maze({ height: this.gridHeight, width: this.gridWidth });
+
+        this.powerup = new Powerup();
 
         this.currentPathIndex = {
             x: 0,
@@ -137,15 +143,12 @@ export default class {
 
 
 
-
     insideTunnel(sprite) {
-
         function rectsIntersect(a, b) {
             let aBox = a.getBounds();
             let bBox = b.getBounds();
             return isTouching(aBox, bBox);
         }
-
 
         let foundIntersectingCell = false;
         this.wallCells.forEach(cell => {
@@ -153,8 +156,5 @@ export default class {
         });
         return !foundIntersectingCell;
     }
-
-
-
 
 }
