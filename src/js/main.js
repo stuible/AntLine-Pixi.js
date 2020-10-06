@@ -5,7 +5,7 @@ import { cloneDeep } from 'lodash';
 import State from './state';
 
 import Player from './sprites/player';
-import antlion from './sprites/antlion';
+import Antlion from './sprites/antlion';
 import Terrain from './terrain';
 
 const app = new PIXI.Application({
@@ -32,17 +32,16 @@ const state = new  State({});
 // Player
 const player = new Player({speed: 5});
 
+// Ant Lion
+const antlion = new Antlion({speed: 3});
+
 // Terrain
 const terrain = new Terrain({ player: player, width: app.renderer.width, height: app.renderer.height, grid: 100 })
+
+// Add elements to stage
 app.stage.addChild(terrain.container);
-
-
 app.stage.addChild(player.sprite);
-
-
-// Ant Lion
-app.stage.addChild(antlion);
-let antlionSpeed = 3;
+app.stage.addChild(antlion.sprite);
 
 
 app.ticker.add((delta) => {
@@ -50,14 +49,14 @@ app.ticker.add((delta) => {
     // Add points as time passes
     state.addPoints(delta / 50);
 
-    // FOllow player with "camera"
+    // Follow player with "camera"
     let cameraDestination = {
         x: player.position.x + 100,
         y: player.position.y
     }
 
-    // Weighted bias for camera follow spring function
-    let bias = 0.96;
+    
+    let bias = 0.96; // Weighted bias for camera follow spring function
 
     app.stage.pivot.x = app.stage.pivot.x * bias + cameraDestination.x * (1 - bias);
     app.stage.pivot.y = app.stage.pivot.y * bias + cameraDestination.y * (1 - bias);
@@ -65,13 +64,13 @@ app.ticker.add((delta) => {
     app.stage.position.y = app.renderer.height / 2;
 
 
-    //Generate New paths / walls
+    // Generate New paths & walls
     terrain.update();
 
     let playerClone = cloneDeep(player.sprite);
 
     let playSpeedCurrent = player.speed;
-    if (!terrain.insideTunnel(player.sprite)) playSpeedCurrent = 0;
+    // if (!terrain.insideTunnel(player.sprite)) playSpeedCurrent = 0;
 
     if (downKey.isDown) {
         playerClone.y += playSpeedCurrent;
@@ -91,7 +90,7 @@ app.ticker.add((delta) => {
     }
 
     //Check if Player is touching Antlion
-    if(player.isTouching(antlion) && !state.gameOver){
+    if(player.isTouching(antlion.sprite) && !state.gameOver){
         state.gameOver = true;
         alert("YOU LOSE! SCORE: " + state.score);
     }
@@ -115,8 +114,8 @@ app.ticker.add((delta) => {
         var unitX = run / length;
         var unitY = rise / length;
 
-        antlion.x += unitX * antlionSpeed;
-        antlion.y += unitY * antlionSpeed;
+        antlion.x += unitX * antlion.speed;
+        antlion.y += unitY * antlion.speed;
     }
 
 });
