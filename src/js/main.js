@@ -2,6 +2,8 @@ import * as PIXI from 'pixi.js'
 import keyboard from './controls/keyboard'
 import { cloneDeep } from 'lodash';
 
+import State from './state';
+
 import Player from './sprites/player';
 import antlion from './sprites/antlion';
 import Terrain from './terrain';
@@ -23,6 +25,8 @@ downKey.press = () => {
     console.log("press down")
 };
 
+const state = new  State({});
+
 // Player
 const player = new Player({speed: 5});
 
@@ -40,6 +44,9 @@ let antlionSpeed = 3;
 
 
 app.ticker.add((delta) => {
+
+    // Add points as time passes
+    state.addPoints(delta / 50);
 
     // FOllow player with "camera"
     let cameraDestination = {
@@ -79,6 +86,12 @@ app.ticker.add((delta) => {
     if (rightKey.isDown) {
         playerClone.x += playSpeedCurrent;
         if (terrain.insideTunnel(playerClone)) player.x += playSpeedCurrent;
+    }
+
+    //Check if Player is touching Antlion
+    if(player.isTouching(antlion) && !state.gameOver){
+        state.gameOver = true;
+        alert("YOU LOSE! SCORE: " + state.score);
     }
 
 

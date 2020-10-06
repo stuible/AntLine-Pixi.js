@@ -1,9 +1,9 @@
 import * as PIXI from 'pixi.js'
 
-
+import { isTouching } from '../helpers/collision'
 
 export default class {
-    constructor({speed}) {
+    constructor({ speed }) {
         this.sprite = PIXI.Sprite.from(PIXI.Texture.WHITE);
         this.sprite.anchor.set(0.5);
         this.sprite.width = 50;
@@ -15,32 +15,38 @@ export default class {
         this.speed = speed ? speed : 5;
     }
 
-    get x(){
+    isTouching(sprite) {
+        let aBox = this.sprite.getBounds();
+        let bBox = sprite.getBounds();
+        return isTouching(aBox, bBox);
+    }
+
+    get x() {
         return this.sprite.x;
     }
-    get y(){
+    get y() {
         return this.sprite.y;
     }
-    get height(){
+    get height() {
         return this.sprite.height;
     }
-    get width(){
+    get width() {
         return this.sprite.width;
     }
-    get position(){
+    get position() {
         return this.sprite.position;
     }
 
-    set x(x){
+    set x(x) {
         this.sprite.x = x;
     }
-    set y(y){
+    set y(y) {
         this.sprite.y = y;
     }
-    set height(h){
+    set height(h) {
         this.sprite.height = h;
     }
-    set width(w){
+    set width(w) {
         this.sprite.width = w;
     }
 }
