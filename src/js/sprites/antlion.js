@@ -5,7 +5,7 @@ antlion.anchor.set(0.5);
 antlion.width = 75;
 antlion.height = 75;
 antlion.y = 350;
-antlion.x = -200;
+antlion.x = -400;
 antlion.tint = 0xC29D00;
 
 export default antlion;
