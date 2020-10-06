@@ -1,11 +1,12 @@
 export default class {
     constructor({}){
         this.gameOver = false
-        this._score = 0;
+        this.paused = false
+        this._score = 0
     }
     
     addPoints(points){
-        this._score += points;
+        this._score += points
     }
 
     get score(){

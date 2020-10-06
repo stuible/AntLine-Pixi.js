@@ -59,6 +59,7 @@ window.onload = () => {
 
 
     app.ticker.add((delta) => {
+        if(state.paused) return;
 
         // Add points as time passes
         if (!state.gameOver) state.addPoints(delta / 50);
@@ -104,7 +105,7 @@ window.onload = () => {
             if (confirm("Play Again?")) {
                 location.reload();
               } else {
-                for (var i = app.stage.children.length - 1; i >= 0; i--) {	app.stage.removeChild(app.stage.children[i]);};
+                state.paused = true;
               } 
             
         }
