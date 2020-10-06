@@ -98,9 +98,15 @@ window.onload = () => {
         //Check if Player is touching Antlion
         if (player.isTouching(antlion.sprite) && !state.gameOver) {
             state.gameOver = true;
-            alert("YOU LOSE! SCORE: " + state.score);
+            // alert("YOU LOSE! SCORE: " + state.score);
             console.log("YOU LOSE! SCORE: " + state.score)
-            location.reload();
+
+            if (confirm("Play Again?")) {
+                location.reload();
+              } else {
+                for (var i = app.stage.children.length - 1; i >= 0; i--) {	app.stage.removeChild(app.stage.children[i]);};
+              } 
+            
         }
 
 
