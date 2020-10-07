@@ -67,7 +67,7 @@ window.onload = () => {
         state.updateTime(app.ticker.elapsedMS);
 
         // Add points as time passes
-        if (!state.gameOver) state.addPoints(delta / 50);
+        if (!state.gameOver) state.addPoints(app.ticker.elapsedMS / 1000);
 
         // Follow player with "camera"
         camera.moveToward(player);
@@ -123,6 +123,7 @@ window.onload = () => {
             console.log("touching powerup:")
             terrain.removePowerupByIndex(powerupIndex);
             state.resetSpeedBonus();
+            state.addPoints(10);
         }
 
         // If it's been less than 3 seconds, enable playerSpeed bonus, if not, disable

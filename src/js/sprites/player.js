@@ -14,7 +14,7 @@ export default class {
 
         this.speedBonus = false;
 
-        this._speedBonusIncrease = 10;
+        this._speedBonusIncrease = 5;
 
         this._speed = speed ? speed : 5;
     }
