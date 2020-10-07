@@ -4,7 +4,7 @@ import { isTouching } from '../helpers/collision'
 
 export default class {
     constructor({ speed }) {
-        this.sprite = PIXI.Sprite.from("assets/ant-1.png");
+        this.sprite = PIXI.Sprite.from("assets/ant-2x.png");
         this.sprite.anchor.set(0.5);
         this.sprite.width = 50;
         this.sprite.height = 50;
@@ -112,18 +112,20 @@ export default class {
         let bias = 0.85; // Weighted bias for rotate spring function
 
         // Wrap rotations to avoid angles greater than 360 or less than 0
-        if(this.sprite.angle < 0) this.sprite.angle = 359;
-        if(this.sprite.angle >= 359) this.sprite.angle = 0;
+        if(this.sprite.angle < 0) this.sprite.angle - 360;
+        if(this.sprite.angle >= 359) this.sprite.angle - 360;
 
         // If we're crossing over the 360 -> 0 angle line, go the short way
         if(this._targetAngle - this.sprite.angle >= 260){
-            this.sprite.angle = this.sprite.angle * bias - this._targetAngle * (1 - bias);
+            console.log("going from right to up")
+            this._targetAngle = -90;
+            // this.sprite.angle = this.sprite.angle * bias - this._targetAngle * (1 - bias);
         }
         // If we're crossing over the 0 -> 360 angle line, go the short way
-        else if(this._targetAngle - this.sprite.angle <= -260){
-            this._targetAngle = 360;
-            this.sprite.angle = this.sprite.angle * bias + this._targetAngle * (1 - bias);
-        }
+        // else if(this._targetAngle - this.sprite.angle <= -260){
+        //     this._targetAngle = 360;
+        //     this.sprite.angle = this.sprite.angle * bias + this._targetAngle * (1 - bias);
+        // }
         // Use spring function to rotate ant towards target angel
         else {
             this.sprite.angle = this.sprite.angle * bias + this._targetAngle * (1 - bias);
