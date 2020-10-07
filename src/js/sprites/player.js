@@ -4,13 +4,13 @@ import { isTouching } from '../helpers/collision'
 
 export default class {
     constructor({ speed }) {
-        this.sprite = PIXI.Sprite.from(PIXI.Texture.WHITE);
+        this.sprite = PIXI.Sprite.from("assets/ant-1.png");
         this.sprite.anchor.set(0.5);
         this.sprite.width = 50;
         this.sprite.height = 50;
         this.sprite.y = 350;
         this.sprite.x = 30;
-        this.sprite.tint = 0xFF0000;
+        // this.sprite.tint = 0xFF0000;
 
         this.speed = speed ? speed : 5;
     }
