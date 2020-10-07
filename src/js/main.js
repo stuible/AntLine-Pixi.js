@@ -16,7 +16,7 @@ window.onload = () => {
         // width: 1080,
         // height: 720,
         resizeTo: document.querySelector('#game'),
-        backgroundColor: 0x1099bb,
+        backgroundColor: 0x111111,
         // view: document.querySelector('#game')
     });
 

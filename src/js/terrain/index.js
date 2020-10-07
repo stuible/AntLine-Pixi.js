@@ -108,7 +108,7 @@ export default class {
         terrain.height = this.gridSize;
         terrain.y = this.gridSize * y;
         terrain.x = this.gridSize * x;
-        terrain.tint = "#FFFFFF";
+        // terrain.tint = "#FFFFFF";
         return terrain;
     }
 
@@ -119,7 +119,7 @@ export default class {
         terrain.height = this.gridSize;
         terrain.y = this.gridSize * y;
         terrain.x = this.gridSize * x;
-        terrain.tint = Math.floor(Math.random() * 16777215);
+        terrain.tint =  0x999999 ;//Math.floor(Math.random() * 16777215);
         return terrain;
     }
 

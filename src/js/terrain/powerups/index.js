@@ -6,13 +6,13 @@ export default class {
     }
 
     createItemCell(x, y) {
-        const terrain = PIXI.Sprite.from(PIXI.Texture.WHITE);
-        terrain.anchor.set(0);
-        terrain.width = this.gridSize;
-        terrain.height = this.gridSize;
-        terrain.y = this.gridSize * y;
-        terrain.x = this.gridSize * x;
-        terrain.tint = "#FFFFFF";
+        const item = PIXI.Sprite.from(PIXI.Texture.WHITE);
+        item.anchor.set(0);
+        item.width = this.gridSize;
+        item.height = this.gridSize;
+        item.y = this.gridSize * y;
+        item.x = this.gridSize * x;
+        item.tint = "#FFFFFF";
         return terrain;
     }
 }
