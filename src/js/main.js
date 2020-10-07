@@ -11,6 +11,8 @@ import Terrain from './terrain';
 import Camera from './camera';
 import UI from './ui';
 
+import Candy from './terrain/powerups/candy';
+
 window.onload = () => {
     const app = new PIXI.Application({
         // width: 1080,
@@ -56,7 +58,6 @@ window.onload = () => {
     app.stage.addChild(terrain.container);
     app.stage.addChild(player.sprite);
     app.stage.addChild(antlion.sprite);
-
 
     app.ticker.add((delta) => {
         if(state.paused) return;

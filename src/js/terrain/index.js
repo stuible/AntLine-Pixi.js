@@ -3,9 +3,9 @@ import { sample } from 'lodash'
 
 import { isTouching } from '../helpers/collision'
 
-import tunnel from './tunnel';
-import wall from './wall';
-import Powerup from './powerups';
+import Tunnel from './tunnel';
+import Wall from './wall';
+import { Candy } from './powerups';
 
 import maze from './maze';
 
@@ -36,8 +36,6 @@ export default class {
 
         this.maze = new maze({ height: this.gridHeight, width: this.gridWidth });
 
-        this.powerup = new Powerup();
-
         this.currentPathIndex = {
             x: 0,
             y: 3,
@@ -64,18 +62,35 @@ export default class {
         return this.wallCells.find(cell => cell.y == y * this.gridSize && cell.x == x * this.gridSize)
     }
 
+    maybeGeneratePowerup(x, y){
+        // Generates a number between 0 and 1
+        const randomNumber = Math.random(); 
+
+        // 5% Chance
+        if(randomNumber < 0.05){
+            console.log("Generated Powerup!")
+            const powerup = this.createPowerupCell('candy', x, y)
+            this.powerupContainer.addChild(powerup);
+            this.powerupCells.push(powerup);
+        }
+    }
+
     generateNewPathCells() {
 
         const mazePath = this.maze.generate((this.player.position.x + ((this.width + 400) / 2)) / this.gridSize);
 
         if (mazePath.length > 0) console.log(mazePath);
 
+        //  For each new cell of maze
         if(mazePath) mazePath.forEach(cellData => {
-            if(!cellData.walls) return;
+            if(!cellData.walls) return; // Make sure the cell has wall data or lets skip it for now
+
+            // Generate path / tunnel sprite for new cell and add display it on screen
             const cell = this.createPathCell(cellData.x, cellData.y)
             this.tunnelContainer.addChild(cell);
             this.pathCells.push(cell);
 
+            // Generate wall sprites as well
             if (cellData.walls.top) {
                 const wall = this.createWallCell(cellData.x, cellData.y - 1);
                 this.wallContainer.addChild(wall);
@@ -97,30 +112,28 @@ export default class {
                 this.wallCells.push(wall);
             }
 
+            // Then (maybe) generate a powerup on this cell location
+            this.maybeGeneratePowerup(cellData.x, cellData.y);
+
         })
 
     }
 
     createPathCell(x, y) {
-        const terrain = PIXI.Sprite.from(PIXI.Texture.WHITE);
-        terrain.anchor.set(0);
-        terrain.width = this.gridSize;
-        terrain.height = this.gridSize;
-        terrain.y = this.gridSize * y;
-        terrain.x = this.gridSize * x;
-        // terrain.tint = "#FFFFFF";
-        return terrain;
+        return new Tunnel({x: this.gridSize * x, y: this.gridSize * y, size: this.gridSize}).sprite;
     }
 
     createWallCell(x, y) {
-        const terrain = PIXI.Sprite.from(PIXI.Texture.WHITE);
-        terrain.anchor.set(0);
-        terrain.width = this.gridSize;
-        terrain.height = this.gridSize;
-        terrain.y = this.gridSize * y;
-        terrain.x = this.gridSize * x;
-        terrain.tint =  0x999999 ;//Math.floor(Math.random() * 16777215);
-        return terrain;
+        return new Wall({x: this.gridSize * x, y: this.gridSize * y, size: this.gridSize}).sprite;
+    }
+
+    createPowerupCell(powerup, x, y) {
+        switch (powerup) {
+            case 'candy':
+                return new Candy({x: this.gridSize * x + (this.gridSize * 0.15), y: this.gridSize * y + (this.gridSize * 0.15), size: this.gridSize * 0.7}).sprite;
+            default:
+                return undefined;
+        }
     }
 
     prunePathCells() {
