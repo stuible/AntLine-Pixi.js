@@ -49,10 +49,10 @@ window.onload = () => {
     const player = new Player({ speed: 5 });
 
     // Ant Lion
-    const antlion = new Antlion({ speed: 4.5 });
+    const antlion = new Antlion({ speed: 5.5 });
 
     // Terrain
-    const terrain = new Terrain({ player: player, width: app.renderer.width, height: app.renderer.height, grid: 100 });
+    const terrain = new Terrain({ player: player, width: app.renderer.width, height: app.renderer.height * 2, grid: 100 });
 
     // Add elements to stage
     app.stage.addChild(terrain.container);
@@ -61,7 +61,7 @@ window.onload = () => {
 
     app.ticker.add((delta) => {
 
-        if(state.paused) return;
+        if (state.paused) return;
 
         // Update global state with change in time (ms) since last loop
         state.updateTime(app.ticker.elapsedMS);
@@ -109,17 +109,17 @@ window.onload = () => {
 
             if (confirm("Game Over !  |  SCORE: " + state.score + "  |  Play Again?")) {
                 location.reload();
-              } else {
+            } else {
                 state.paused = true;
-              } 
-            
+            }
+
         }
 
         // Get the index of the powerup that the player is touching (if it is)
         const powerupIndex = terrain.isTouchingPowerup(player.sprite);
 
         // If the index is not false, remove the powerup and apply it's powers to the player
-        if(powerupIndex !== false){
+        if (powerupIndex !== false) {
             console.log("touching powerup:")
             terrain.removePowerupByIndex(powerupIndex);
             state.resetSpeedBonus();
@@ -127,24 +127,33 @@ window.onload = () => {
         }
 
         // If it's been less than 3 seconds, enable playerSpeed bonus, if not, disable
-        if(state.speedBonus) player.speedBonus = true;
+        if (state.speedBonus) player.speedBonus = true;
         else player.speedBonus = false;
 
 
-        // Get the next path cell to the right of the antlion, we'll use this to give the antlion a place to go
-        let antlionTargetCell = terrain.maze.path.filter(cell => cell.x >= antlion.x / terrain.gridSize)[0]
+        // If Antlion is behind the player, follow the paths to get closer to player, of not, target player directly
+        if (antlion.x < player.x) {
+            // Get the next path cell to the right of the antlion, we'll use this to give the antlion a place to go
+            let antlionTargetCell = terrain.maze.path.filter(cell => cell.x >= antlion.x / terrain.gridSize)[0]
 
-        // If theres a cell to move to, get its pixel location
-        if (antlionTargetCell) {
-            const antlionTarget = {
-                x: (antlionTargetCell.x * terrain.gridSize) + terrain.gridSize / 2,
-                y: (antlionTargetCell.y * terrain.gridSize) + terrain.gridSize / 2
+            // If theres a cell to move to, get its pixel location
+            if (antlionTargetCell) {
+                const antlionTarget = {
+                    x: (antlionTargetCell.x * terrain.gridSize) + terrain.gridSize / 2,
+                    y: (antlionTargetCell.y * terrain.gridSize) + terrain.gridSize / 2
+                }
+                // console.log(antlionTarget)
+
+                // Move Ant Lion towards the next cell of the maze
+                antlion.moveToward(antlionTarget.x, antlionTarget.y);
             }
-            // console.log(antlionTarget)
-
-            // Move Ant Lion towards the next cell of the maze
-            antlion.moveToward(antlionTarget.x, antlionTarget.y);
         }
+        else {
+            antlion.moveToward(player.x, player.y);
+        }
+
+
+
 
     });
 }

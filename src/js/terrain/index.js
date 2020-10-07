@@ -143,7 +143,7 @@ export default class {
     }
 
     prunePathCells() {
-        let xCutoff = this.player.position.x - (this.originalWidth / 2) - this.gridSize;
+        let xCutoff = this.player.position.x - (this.originalWidth / 2) - (this.gridSize * 2);
 
         let visibleWalls = this.wallCells.filter(cell => {
             if(cell.x > xCutoff) return true;
@@ -164,7 +164,7 @@ export default class {
     }
 
     pruneCandyCells(){
-        let xCutoff = this.player.position.x - (this.originalWidth / 2) - this.gridSize;
+        let xCutoff = this.player.position.x - (this.originalWidth / 2) - (this.gridSize * 2);
         console.log(xCutoff);
 
         let visibleCandy = this.powerupCells.filter(cell => {
