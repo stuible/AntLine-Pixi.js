@@ -60,7 +60,11 @@ window.onload = () => {
     app.stage.addChild(antlion.sprite);
 
     app.ticker.add((delta) => {
+
         if(state.paused) return;
+
+        // Update global state with change in time (ms) since last loop
+        state.updateTime(app.ticker.elapsedMS);
 
         // Add points as time passes
         if (!state.gameOver) state.addPoints(delta / 50);
@@ -110,6 +114,20 @@ window.onload = () => {
               } 
             
         }
+
+        // Get the index of the powerup that the player is touching (if it is)
+        const powerupIndex = terrain.isTouchingPowerup(player.sprite);
+
+        // If the index is not false, remove the powerup and apply it's powers to the player
+        if(powerupIndex !== false){
+            console.log("touching powerup:")
+            terrain.removePowerupByIndex(powerupIndex);
+            state.resetSpeedBonus();
+        }
+
+        // If it's been less than 3 seconds, enable playerSpeed bonus, if not, disable
+        if(state.speedBonus) player.speedBonus = true;
+        else player.speedBonus = false;
 
 
         // Get the next path cell to the right of the antlion, we'll use this to give the antlion a place to go

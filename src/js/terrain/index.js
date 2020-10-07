@@ -19,6 +19,8 @@ export default class {
         this.wallContainer = new PIXI.Container();
         this.powerupContainer = new PIXI.Container();
 
+        this.originalWidth = width;
+
         this.height = height;
         this.width = width;
 
@@ -50,7 +52,6 @@ export default class {
 
     update() {
         this.generateNewPathCells();
-        this.prunePathCells();
     }
 
     // Return path cell based on X, Y location on grid, if it exists
@@ -78,8 +79,6 @@ export default class {
     generateNewPathCells() {
 
         const mazePath = this.maze.generate((this.player.position.x + ((this.width + 400) / 2)) / this.gridSize);
-
-        if (mazePath.length > 0) console.log(mazePath);
 
         //  For each new cell of maze
         if(mazePath) mazePath.forEach(cellData => {
@@ -117,6 +116,13 @@ export default class {
 
         })
 
+        // If there were new mazePaths generated, lets prune the old ones
+        if (mazePath.length > 0) {
+            console.log(mazePath);
+            this.prunePathCells();
+            this.pruneCandyCells();
+        }
+
     }
 
     createPathCell(x, y) {
@@ -137,37 +143,73 @@ export default class {
     }
 
     prunePathCells() {
-        let maxViewableCells = this.player.position.x + this.width / this.gridSize;
+        let xCutoff = this.player.position.x - (this.originalWidth / 2) - this.gridSize;
 
-        //Only keep the past x cells
-        const pathCellsToKeep = 70;
-        const wallCellsToKeep = 60;
+        let visibleWalls = this.wallCells.filter(cell => {
+            if(cell.x > xCutoff) return true;
+            else {
+                this.wallContainer.removeChild(cell);
+            }
+        })
 
-        for (let index = 0; index < this.pathCells.length - pathCellsToKeep; index++) {
-            this.tunnelContainer.removeChild(this.pathCells[index])
-        }
-        for (let index = 0; index < this.wallCells.length - wallCellsToKeep; index++) {
-            this.wallContainer.removeChild(this.wallCells[index])
-        }
+        let visiblePaths = this.pathCells.filter(cell => {
+            if(cell.x > xCutoff) return true;
+            else {
+                this.tunnelContainer.removeChild(cell);
+            }
+        })
 
-        this.pathCells = this.pathCells.slice(-1 * pathCellsToKeep);
-        this.wallCells = this.wallCells.slice(-1 * wallCellsToKeep);
+        this.pathCells = visiblePaths;
+        this.wallCells = visibleWalls;
     }
 
+    pruneCandyCells(){
+        let xCutoff = this.player.position.x - (this.originalWidth / 2) - this.gridSize;
+        console.log(xCutoff);
 
+        let visibleCandy = this.powerupCells.filter(cell => {
+            if(cell.x > xCutoff) return true;
+            else {
+                this.powerupContainer.removeChild(cell);
+            }
+        })
+
+        this.powerupCells = visibleCandy;
+        console.log(this.powerupCells)
+    }
+
+    getPowerupByIndex(index){
+        return this.powerupCells[index];
+    }
+
+    removePowerupByIndex(index){
+        this.powerupContainer.removeChild(this.getPowerupByIndex(index));
+        this.powerupCells.splice(index, 1);
+    }
+
+    rectsIntersect(a, b) {
+        let aBox = a.getBounds();
+        let bBox = b.getBounds();
+        return isTouching(aBox, bBox);
+    }
+
+    isTouchingPowerup(sprite){
+        for (let index = 0; index <  this.powerupCells.length; index++) {
+            if (this.rectsIntersect(this.powerupCells[index], sprite)) return index;
+        }
+        return false;
+    }
 
     insideTunnel(sprite) {
-        function rectsIntersect(a, b) {
-            let aBox = a.getBounds();
-            let bBox = b.getBounds();
-            return isTouching(aBox, bBox);
-        }
+        
 
         let foundIntersectingCell = false;
         this.wallCells.forEach(cell => {
-            if (rectsIntersect(cell, sprite)) foundIntersectingCell = true;
+            if (this.rectsIntersect(cell, sprite)) foundIntersectingCell = true;
         });
         return !foundIntersectingCell;
     }
+
+
 
 }

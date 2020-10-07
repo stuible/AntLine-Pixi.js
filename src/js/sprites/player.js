@@ -12,13 +12,22 @@ export default class {
         this.sprite.x = 30;
         // this.sprite.tint = 0xFF0000;
 
-        this.speed = speed ? speed : 5;
+        this.speedBonus = false;
+
+        this._speedBonusIncrease = 10;
+
+        this._speed = speed ? speed : 5;
     }
 
     isTouching(sprite) {
         let aBox = this.sprite.getBounds();
         let bBox = sprite.getBounds();
         return isTouching(aBox, bBox);
+    }
+
+    get speed() {
+        if(this.speedBonus) return this._speed + this._speedBonusIncrease;
+        else return this._speed;
     }
 
     get x() {
