@@ -57,6 +57,7 @@ window.onload = () => {
     // Add elements to stage
     app.stage.addChild(terrain.container);
     app.stage.addChild(player.sprite);
+    app.stage.addChild(player.hitbox); // Hitbox has to be added to the stage in order for collition detection to work (aparently)
     app.stage.addChild(antlion.sprite);
 
     app.ticker.add((delta) => {
@@ -78,26 +79,29 @@ window.onload = () => {
         // Generate New paths & walls
         terrain.update();
 
-        let playerClone = cloneDeep(player.sprite);
+        // Let player know this is a new frame
+        player.update();
+
+        let playerClone = cloneDeep(player.hitbox);
 
         if (downKey.isDown) {
             playerClone.y += player.speed;
-            if (terrain.insideTunnel(playerClone)) player.y += player.speed;
+            if (terrain.insideTunnel(playerClone)) player.move("down");
             playerClone.y -= player.speed;
         }
         if (upKey.isDown) {
             playerClone.y -= player.speed;
-            if (terrain.insideTunnel(playerClone)) player.y -= player.speed;
+            if (terrain.insideTunnel(playerClone)) player.move("up");
             playerClone.y += player.speed;
         }
         if (leftKey.isDown) {
             playerClone.x -= player.speed;
-            if (terrain.insideTunnel(playerClone)) player.x -= player.speed;
+            if (terrain.insideTunnel(playerClone)) player.move("left");
             playerClone.x += player.speed;
         }
         if (rightKey.isDown) {
             playerClone.x += player.speed;
-            if (terrain.insideTunnel(playerClone)) player.x += player.speed;
+            if (terrain.insideTunnel(playerClone)) player.move("right");
             playerClone.x -= player.speed;
         }
 
