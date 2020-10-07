@@ -10,8 +10,8 @@ export default class {
         this.sprite.height = 50;
         this.sprite.y = 350;
         this.sprite.x = 30;
-        // this.sprite.tint = 0xFF0000;
 
+        // Hidden Hitbox sprite that doesn't rotate
         this.hitbox = PIXI.Sprite.from(PIXI.Texture.WHITE);
         this.hitbox.anchor.set(0.5);
         this.hitbox.width = this.sprite.width;
@@ -22,6 +22,7 @@ export default class {
         this.hitbox.visible = false;
 
         this.directions = [];
+        this._targetAngle = 0;
 
         this.speedBonus = false;
 
@@ -76,33 +77,56 @@ export default class {
 
     update() {
         this.directions = [];
+        this.rotateTowardsAngle();
     }
 
     rotateSpriteByDirection() {
         if (this.directions.includes("up")) {
-            this.sprite.angle = 270;
+            this._targetAngle = 270;
         }
         if (this.directions.includes("down")) {
-            this.sprite.angle = 90;
+            this._targetAngle = 90;
         }
         if (this.directions.includes("left")) {
-            this.sprite.angle = 180;
+            this._targetAngle = 180;
         }
         if (this.directions.includes("right")) {
-            this.sprite.angle = 0;
+            this._targetAngle = 0;
         }
 
         if (this.directions.includes("up") && this.directions.includes("right")) {
-            this.sprite.angle = 315;
+            this._targetAngle = 315;
         }
         if (this.directions.includes("down") && this.directions.includes("right")) {
-            this.sprite.angle = 45;
+            this._targetAngle = 45;
         }
         if (this.directions.includes("up") && this.directions.includes("left")) {
-            this.sprite.angle = 225;
+            this._targetAngle = 225;
         }
         if (this.directions.includes("down") && this.directions.includes("left")) {
-            this.sprite.angle = 135;
+            this._targetAngle = 135;
+        }
+    }
+
+    rotateTowardsAngle() {
+        let bias = 0.85; // Weighted bias for rotate spring function
+
+        // Wrap rotations to avoid angles greater than 360 or less than 0
+        if(this.sprite.angle < 0) this.sprite.angle = 359;
+        if(this.sprite.angle >= 359) this.sprite.angle = 0;
+
+        // If we're crossing over the 360 -> 0 angle line, go the short way
+        if(this._targetAngle - this.sprite.angle >= 260){
+            this.sprite.angle = this.sprite.angle * bias - this._targetAngle * (1 - bias);
+        }
+        // If we're crossing over the 0 -> 360 angle line, go the short way
+        else if(this._targetAngle - this.sprite.angle <= -260){
+            this._targetAngle = 360;
+            this.sprite.angle = this.sprite.angle * bias + this._targetAngle * (1 - bias);
+        }
+        // Use spring function to rotate ant towards target angel
+        else {
+            this.sprite.angle = this.sprite.angle * bias + this._targetAngle * (1 - bias);
         }
     }
 
