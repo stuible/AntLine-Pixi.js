@@ -54,11 +54,12 @@ export default class {
         this.generateNewPathCells();
     }
 
-    // Return path cell based on X, Y location on grid, if it exists
+    // Return path / tunnel cell based on X, Y location on grid, if it exists 
     getPathCell(x, y) {
         return this.pathCells.find(cell => cell.y == y * this.gridSize && cell.x == x * this.gridSize)
     }
 
+    // Return wall cell based on X, Y location on grid, if it exists
     getWallCell(x, y) {
         return this.wallCells.find(cell => cell.y == y * this.gridSize && cell.x == x * this.gridSize)
     }
@@ -142,6 +143,7 @@ export default class {
         }
     }
 
+    // Remove path and wall cells that the player has already passed and are behind them
     prunePathCells() {
         let xCutoff = this.player.position.x - (this.originalWidth / 2) - (this.gridSize * 2);
 
@@ -163,6 +165,7 @@ export default class {
         this.wallCells = visibleWalls;
     }
 
+    // Remove candy cells that the player has already passed and are behind them
     pruneCandyCells(){
         let xCutoff = this.player.position.x - (this.originalWidth / 2) - (this.gridSize * 2);
         console.log(xCutoff);
@@ -178,21 +181,25 @@ export default class {
         console.log(this.powerupCells)
     }
 
+    // Return powerup in powerup array by index
     getPowerupByIndex(index){
         return this.powerupCells[index];
     }
 
+    // Remove sprite and array item of powerup by Index
     removePowerupByIndex(index){
         this.powerupContainer.removeChild(this.getPowerupByIndex(index));
         this.powerupCells.splice(index, 1);
     }
 
+    // Get bounding boxes for 2 sprites
     rectsIntersect(a, b) {
         let aBox = a.getBounds();
         let bBox = b.getBounds();
         return isTouching(aBox, bBox);
     }
 
+    // Returns index of powerup if input sprite is touching one
     isTouchingPowerup(sprite){
         for (let index = 0; index <  this.powerupCells.length; index++) {
             if (this.rectsIntersect(this.powerupCells[index], sprite)) return index;
@@ -200,8 +207,8 @@ export default class {
         return false;
     }
 
+    // Return true if input sprite is not touching any walls
     insideTunnel(sprite) {
-        
 
         let foundIntersectingCell = false;
         this.wallCells.forEach(cell => {
