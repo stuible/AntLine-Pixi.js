@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js'
 
 export default class {
     constructor({ speed }) {
-        this.sprite = PIXI.Sprite.from(PIXI.Texture.WHITE);
+        this.sprite = PIXI.Sprite.from("assets/Ant Lion-1.png");
         this.sprite.anchor.set(0.5);
         this.sprite.width = 75;
         this.sprite.height = 75;

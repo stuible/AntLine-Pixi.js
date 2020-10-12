@@ -78,7 +78,7 @@ window.onload = () => {
         terrain.update();
 
         // Let player know this is a new frame
-        player.update();
+        player.update(delta);
 
         let playerClone = cloneDeep(player.hitbox);
 

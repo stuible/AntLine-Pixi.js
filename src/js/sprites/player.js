@@ -1,6 +1,7 @@
 import * as PIXI from 'pixi.js'
 
 import { isTouching } from '../helpers/collision'
+import map from '../helpers/map'
 
 export default class {
     constructor({ speed }) {
@@ -11,15 +12,25 @@ export default class {
         this.sprite.y = 350;
         this.sprite.x = 30;
 
+        this.spriteTextures = [
+            PIXI.Texture.from('assets/ant/Ant1@2x.png'),
+            PIXI.Texture.from('assets/ant/Ant2@2x.png'),
+            PIXI.Texture.from('assets/ant/Ant3@2x.png'),
+            PIXI.Texture.from('assets/ant/Ant4@2x.png'),
+        ];
+        this.spriteTextureIndex = 0;
+
         // Hidden Hitbox sprite that doesn't rotate
         this.hitbox = PIXI.Sprite.from(PIXI.Texture.WHITE);
         this.hitbox.anchor.set(0.5);
         this.hitbox.width = this.sprite.width;
         this.hitbox.height = this.sprite.height;
-        this.hitbox.y = this.sprite.y ;
+        this.hitbox.y = this.sprite.y;
         this.hitbox.x = this.sprite.x;
         this.hitbox.tint = 0xFF0000;
         this.hitbox.visible = false;
+
+        this._timeSinceAnimation = 0;
 
         this.directions = [];
         this._targetAngle = 0;
@@ -58,6 +69,11 @@ export default class {
         return this.hitbox.position;
     }
 
+    get isMoving() {
+        console.log(this.directions)
+        return this.directions.length > 0;
+    }
+
     set x(x) {
         this.sprite.x = x;
         this.hitbox.x = x;
@@ -75,9 +91,25 @@ export default class {
         this.hitbox.width = w;
     }
 
-    update() {
+    update(delta) {
+        this.animate(delta);
         this.directions = [];
         this.rotateTowardsAngle();
+    }
+
+    animate(delta) {
+        this._timeSinceAnimation += delta;
+        if (this._timeSinceAnimation > map(this.speed, 5, 2, this._speed, this._speed + this._speedBonusIncrease)) {
+            if (this.isMoving) {
+                if (this.spriteTextureIndex < this.spriteTextures.length - 1) this.spriteTextureIndex++;
+                else this.spriteTextureIndex = 0;
+
+                this.sprite.texture = this.spriteTextures[this.spriteTextureIndex]
+            }
+            this._timeSinceAnimation = 0;
+        }
+
+
     }
 
     rotateSpriteByDirection() {
@@ -112,11 +144,11 @@ export default class {
         let bias = 0.85; // Weighted bias for rotate spring function
 
         // Wrap rotations to avoid angles greater than 360 or less than 0
-        if(this.sprite.angle < 0) this.sprite.angle - 360;
-        if(this.sprite.angle >= 359) this.sprite.angle - 360;
+        if (this.sprite.angle < 0) this.sprite.angle - 360;
+        if (this.sprite.angle >= 359) this.sprite.angle - 360;
 
         // If we're crossing over the 360 -> 0 angle line, go the short way
-        if(this._targetAngle - this.sprite.angle >= 260){
+        if (this._targetAngle - this.sprite.angle >= 260) {
             console.log("going from right to up")
             this._targetAngle = -90;
             // this.sprite.angle = this.sprite.angle * bias - this._targetAngle * (1 - bias);
