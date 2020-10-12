@@ -70,7 +70,6 @@ export default class {
     }
 
     get isMoving() {
-        console.log(this.directions)
         return this.directions.length > 0;
     }
 
@@ -138,30 +137,21 @@ export default class {
         if (this.directions.includes("down") && this.directions.includes("left")) {
             this._targetAngle = 135;
         }
+
+        function closestEquivalentAngle(from, to) {
+            var delta = ((((to - from) % 360) + 540) % 360) - 180;
+            return from + delta;
+        }
+
+        this._targetAngle = closestEquivalentAngle(this.sprite.angle, this._targetAngle);
     }
 
     rotateTowardsAngle() {
+
         let bias = 0.85; // Weighted bias for rotate spring function
 
-        // Wrap rotations to avoid angles greater than 360 or less than 0
-        if (this.sprite.angle < 0) this.sprite.angle - 360;
-        if (this.sprite.angle >= 359) this.sprite.angle - 360;
+        this.sprite.angle = this.sprite.angle * bias + this._targetAngle * (1 - bias);
 
-        // If we're crossing over the 360 -> 0 angle line, go the short way
-        if (this._targetAngle - this.sprite.angle >= 260) {
-            console.log("going from right to up")
-            this._targetAngle = -90;
-            // this.sprite.angle = this.sprite.angle * bias - this._targetAngle * (1 - bias);
-        }
-        // If we're crossing over the 0 -> 360 angle line, go the short way
-        // else if(this._targetAngle - this.sprite.angle <= -260){
-        //     this._targetAngle = 360;
-        //     this.sprite.angle = this.sprite.angle * bias + this._targetAngle * (1 - bias);
-        // }
-        // Use spring function to rotate ant towards target angel
-        else {
-            this.sprite.angle = this.sprite.angle * bias + this._targetAngle * (1 - bias);
-        }
     }
 
     move(direction) {
