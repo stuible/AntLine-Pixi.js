@@ -4,8 +4,7 @@ import { cloneDeep } from 'lodash';
 
 import State from './state';
 
-import Player from './sprites/player';
-import Antlion from './sprites/antlion';
+import { Player, Antlion } from './sprites';
 import Terrain from './terrain';
 
 import Camera from './camera';

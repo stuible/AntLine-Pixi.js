@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js'
 
 import { isTouching } from '../helpers/collision'
 import map from '../helpers/map'
+import { Rotation, Animation } from './utils';
 
 export default class {
     constructor({ speed }) {
@@ -12,13 +13,14 @@ export default class {
         this.sprite.y = 350;
         this.sprite.x = 30;
 
-        this.spriteTextures = [
-            PIXI.Texture.from('assets/ant/Ant1@2x.png'),
-            PIXI.Texture.from('assets/ant/Ant2@2x.png'),
-            PIXI.Texture.from('assets/ant/Ant3@2x.png'),
-            PIXI.Texture.from('assets/ant/Ant4@2x.png'),
-        ];
-        this.spriteTextureIndex = 0;
+        this.animator = new Animation(this.sprite, {
+            textures: [
+                'assets/ant/Ant1@2x.png',
+                'assets/ant/Ant2@2x.png',
+                'assets/ant/Ant3@2x.png',
+                'assets/ant/Ant4@2x.png'
+            ]
+        });
 
         // Hidden Hitbox sprite that doesn't rotate
         this.hitbox = PIXI.Sprite.from(PIXI.Texture.WHITE);
@@ -30,7 +32,7 @@ export default class {
         this.hitbox.tint = 0xFF0000;
         this.hitbox.visible = false;
 
-        this._timeSinceAnimation = 0;
+        this.rotator = new Rotation(this.sprite);
 
         this.directions = [];
         this._targetAngle = 0;
@@ -92,61 +94,18 @@ export default class {
 
     update(delta) {
         this.animate(delta);
-        this.directions = [];
         this.rotateTowardsAngle();
+        this.directions = [];
     }
 
     animate(delta) {
-        this._timeSinceAnimation += delta;
-        if (this._timeSinceAnimation > map(this.speed, 5, 2, this._speed, this._speed + this._speedBonusIncrease)) {
-            if (this.isMoving) {
-                if (this.spriteTextureIndex < this.spriteTextures.length - 1) this.spriteTextureIndex++;
-                else this.spriteTextureIndex = 0;
-
-                this.sprite.texture = this.spriteTextures[this.spriteTextureIndex]
-            }
-            this._timeSinceAnimation = 0;
-        }
-
-
-    }
-
-    rotateSpriteByDirection() {
-        if (this.directions.includes("up")) {
-            this._targetAngle = 270;
-        }
-        if (this.directions.includes("down")) {
-            this._targetAngle = 90;
-        }
-        if (this.directions.includes("left")) {
-            this._targetAngle = 180;
-        }
-        if (this.directions.includes("right")) {
-            this._targetAngle = 0;
-        }
-
-        if (this.directions.includes("up") && this.directions.includes("right")) {
-            this._targetAngle = 315;
-        }
-        if (this.directions.includes("down") && this.directions.includes("right")) {
-            this._targetAngle = 45;
-        }
-        if (this.directions.includes("up") && this.directions.includes("left")) {
-            this._targetAngle = 225;
-        }
-        if (this.directions.includes("down") && this.directions.includes("left")) {
-            this._targetAngle = 135;
-        }
-
-        function closestEquivalentAngle(from, to) {
-            var delta = ((((to - from) % 360) + 540) % 360) - 180;
-            return from + delta;
-        }
-
-        this._targetAngle = closestEquivalentAngle(this.sprite.angle, this._targetAngle);
+        this.animator.enabled = this.isMoving;
+        this.animator.speed = map(this.speed, 5, 2, this._speed, this._speed + this._speedBonusIncrease);
+        this.animator.update(delta);
     }
 
     rotateTowardsAngle() {
+        this._targetAngle = this.rotator.getAngleFromDirections(this.directions);
 
         let bias = 0.85; // Weighted bias for rotate spring function
 
@@ -172,6 +131,5 @@ export default class {
                 return;
         }
         this.directions.push(direction);
-        this.rotateSpriteByDirection();
     }
 }
