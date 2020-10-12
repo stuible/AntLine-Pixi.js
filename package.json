@@ -21,13 +21,13 @@
     "pixi.js": "^5.3.3"
   },
   "devDependencies": {
-    "copy-webpack-plugin": "^6.1.1",
+    "copy-webpack-plugin": "^6.2.1",
     "core-js": "^3.6.5",
     "html-webpack-plugin": "^4.5.0",
     "imagemin-webpack-plugin": "^2.4.2",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0",
-    "webpack-merge": "^5.1.4"
+    "webpack-merge": "^5.2.0"
   }
 }
