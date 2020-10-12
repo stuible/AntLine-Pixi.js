@@ -42,4 +42,8 @@ export default class {
         return this.closestEquivalentAngle(this.sprite.angle, targetAngle);
 
     }
+
+    getAngleFromRiseRun(rise, run){
+        return Math.atan2(rise, run) * 180 / Math.PI
+    }
 }

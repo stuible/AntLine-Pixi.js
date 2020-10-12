@@ -76,8 +76,9 @@ window.onload = () => {
         // Generate New paths & walls
         terrain.update();
 
-        // Let player know this is a new frame
+        // Let player / antlion know this is a new frame
         player.update(delta);
+        antlion.update(delta);
 
         let playerClone = cloneDeep(player.hitbox);
 

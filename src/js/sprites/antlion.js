@@ -1,5 +1,7 @@
 import * as PIXI from 'pixi.js'
 
+import { Rotation, Animation } from './utils';
+
 export default class {
     constructor({ speed }) {
         this.sprite = PIXI.Sprite.from("assets/Ant Lion-1.png");
@@ -10,7 +12,16 @@ export default class {
         this.sprite.x = -400;
         this.sprite.tint = 0xC29D00;
 
+        this.rotator = new Rotation(this.sprite);
+        this.directions = [];
+
         this.speed = speed;
+
+        this._targetAngle = 0;
+    }
+
+    update(delta) {
+        this.rotateTowardsAngle();
     }
 
     moveToward(x, y){
@@ -22,6 +33,16 @@ export default class {
 
         this.x += unitX * this.speed;
         this.y += unitY * this.speed;
+
+        // Update sprite's taget angle based on the directional degrees it's moving
+        this._targetAngle =  this.rotator.getAngleFromRiseRun(rise, run);
+    }
+
+    rotateTowardsAngle() {
+        let bias = 0.85; // Weighted bias for rotate spring function
+
+        this.sprite.angle = this.sprite.angle * bias + this._targetAngle * (1 - bias);
+
     }
 
     get x() {
