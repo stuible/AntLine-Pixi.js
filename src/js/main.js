@@ -43,7 +43,7 @@ window.onload = () => {
     const camera = new Camera(app);
 
     // Player
-    const player = new Player({ speed: 5 });
+    const player = new Player({ speed: 5, state: state });
 
     // Ant Lion
     const antlion = new Antlion({ speed: 5.5 });
@@ -122,7 +122,6 @@ window.onload = () => {
 
         // If the powerful is not false, remove the powerup and apply it's powers to the player
         if (powerup.type) {
-
             switch (powerup.type) {
                 case 'candy':
                     console.log("touching candy")
@@ -138,17 +137,11 @@ window.onload = () => {
                     state.speedPenalty = false;
                     break;
             }
-
         }
         // No powerups on the current cell
         else {
             state.speedPenalty = false;
         }
-
-        // If it's been less than 3 seconds, enable playerSpeed bonus, if not, disable
-        player.speedBonus = state.speedBonus;
-        player.speedPenalty = state.speedPenalty;
-
 
         // If Antlion is behind the player, follow the paths to get closer to player, of not, target player directly
         if (antlion.x < player.x) {
@@ -172,7 +165,10 @@ window.onload = () => {
         }
 
 
-
+        // If Ant lion is super behind, teleport it offscreen so it has a chance
+        if(antlion.x < player.x - terrain.originalWidth){
+            antlion.x = player.x - terrain.originalWidth;
+        }
 
     });
 }

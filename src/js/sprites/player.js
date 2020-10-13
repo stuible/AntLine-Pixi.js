@@ -5,7 +5,7 @@ import map from '../helpers/map'
 import { Rotation, Animation } from './utils';
 
 export default class {
-    constructor({ speed }) {
+    constructor({ speed, state }) {
         this.sprite = PIXI.Sprite.from("assets/ant2-2x.png");
         this.sprite.anchor.set(0.5);
         this.sprite.width = 50;
@@ -21,6 +21,8 @@ export default class {
                 'assets/ant/Ant4@2x.png'
             ]
         });
+
+        this.state = state;
 
         // Hidden Hitbox sprite that doesn't rotate
         this.hitbox = PIXI.Sprite.from(PIXI.Texture.WHITE);
@@ -39,9 +41,6 @@ export default class {
 
         this._speed = speed ? speed : 5;
 
-        this.speedBonus = false;
-        this.speedPenalty = false;
-
         this._speedBonusIncrease = 5;
         this._speedPenaltyDecrease = -(this._speed / 1.5);
     }
@@ -52,15 +51,23 @@ export default class {
         return isTouching(aBox, bBox);
     }
 
+    get speedBonus() {
+        return this.state.speedBonus;
+    }
+
+    get speedPenalty() {
+        return this.state.speedPenalty;
+    }
+
     get speed() {
         return this._speed + this.speedBonusIncrease + this.speedPenaltyDecrease;
     }
 
-    get speedBonusIncrease(){
+    get speedBonusIncrease() {
         return this.speedBonus ? this._speedBonusIncrease : 0;
     }
 
-    get speedPenaltyDecrease(){
+    get speedPenaltyDecrease() {
         return this.speedPenalty ? this._speedPenaltyDecrease : 0;
     }
 
