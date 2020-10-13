@@ -27,8 +27,8 @@ export default class {
         // Hidden Hitbox sprite that doesn't rotate
         this.hitbox = PIXI.Sprite.from(PIXI.Texture.WHITE);
         this.hitbox.anchor.set(0.5);
-        this.hitbox.width = this.sprite.width;
-        this.hitbox.height = this.sprite.height;
+        this.hitbox.width = this.sprite.width * 0.75;
+        this.hitbox.height = this.sprite.height * 0.75;
         this.hitbox.y = this.sprite.y;
         this.hitbox.x = this.sprite.x;
         this.hitbox.tint = 0xFF0000;
@@ -46,7 +46,7 @@ export default class {
     }
 
     isTouching(sprite) {
-        let aBox = this.sprite.getBounds();
+        let aBox = this.hitbox.getBounds();
         let bBox = sprite.getBounds();
         return isTouching(aBox, bBox);
     }

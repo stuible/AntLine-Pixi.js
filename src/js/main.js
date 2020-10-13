@@ -166,8 +166,10 @@ window.onload = () => {
 
 
         // If Ant lion is super behind, teleport it offscreen so it has a chance
-        if(antlion.x < player.x - terrain.originalWidth){
-            antlion.x = player.x - terrain.originalWidth;
+        const antlionTrailingMax = (terrain.originalWidth / 2) + terrain.gridSize;
+
+        if (antlion.x < player.x - antlionTrailingMax) {
+            antlion.x = player.x - antlionTrailingMax;
         }
 
     });
