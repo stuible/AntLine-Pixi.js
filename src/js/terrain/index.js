@@ -177,7 +177,7 @@ export default class {
     // Remove candy cells that the player has already passed and are behind them
     prunePowerupCells() {
         let xCutoff = this.player.position.x - (this.originalWidth / 2) - (this.gridSize * 2);
-        console.log(xCutoff);
+        // console.log(xCutoff);
 
         let visibleCandy = this.powerupCells.filter(powerup => {
             if (powerup.sprite.x > xCutoff) return true;
@@ -187,7 +187,7 @@ export default class {
         })
 
         this.powerupCells = visibleCandy;
-        console.log(this.powerupCells)
+        // console.log(this.powerupCells)
     }
 
     // Return powerup in powerup array by index
