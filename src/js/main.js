@@ -119,7 +119,7 @@ window.onload = () => {
         // Get the index of the powerup that the player is touching (if it is)
         const powerup = terrain.isTouchingPowerup(player.sprite);
 
-        // If the powerful is not false, remove the powerup and apply it's powers to the player
+        // If the powerup is not undefined, remove the powerup (if appropriate) and apply it's powers to the player
         if (powerup.type) {
             switch (powerup.type) {
                 case 'candy':
@@ -137,7 +137,7 @@ window.onload = () => {
                     break;
             }
         }
-        // No powerups on the current cell
+        // Player is not touching a powerup
         else {
             state.speedPenalty = false;
         }
