@@ -37,11 +37,13 @@ export default class {
         this.directions = [];
         this._targetAngle = 0;
 
+        this._speed = speed ? speed : 5;
+
         this.speedBonus = false;
+        this.speedPenalty = false;
 
         this._speedBonusIncrease = 5;
-
-        this._speed = speed ? speed : 5;
+        this._speedPenaltyDecrease = -(this._speed / 1.5);
     }
 
     isTouching(sprite) {
@@ -51,8 +53,15 @@ export default class {
     }
 
     get speed() {
-        if (this.speedBonus) return this._speed + this._speedBonusIncrease;
-        else return this._speed;
+        return this._speed + this.speedBonusIncrease + this.speedPenaltyDecrease;
+    }
+
+    get speedBonusIncrease(){
+        return this.speedBonus ? this._speedBonusIncrease : 0;
+    }
+
+    get speedPenaltyDecrease(){
+        return this.speedPenalty ? this._speedPenaltyDecrease : 0;
     }
 
     get x() {
@@ -100,7 +109,7 @@ export default class {
 
     animate(delta) {
         this.animator.enabled = this.isMoving;
-        this.animator.speed = map(this.speed, 5, 2, this._speed, this._speed + this._speedBonusIncrease);
+        this.animator.speed = map(this.speed, 10, 2, this._speed + this._speedPenaltyDecrease, this._speed + this._speedBonusIncrease);
         this.animator.update(delta);
     }
 

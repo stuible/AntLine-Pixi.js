@@ -118,19 +118,36 @@ window.onload = () => {
         }
 
         // Get the index of the powerup that the player is touching (if it is)
-        const powerupIndex = terrain.isTouchingPowerup(player.sprite);
+        const powerup = terrain.isTouchingPowerup(player.sprite);
 
-        // If the index is not false, remove the powerup and apply it's powers to the player
-        if (powerupIndex !== false) {
-            console.log("touching powerup:")
-            terrain.removePowerupByIndex(powerupIndex);
-            state.resetSpeedBonus();
-            state.addPoints(10);
+        // If the powerful is not false, remove the powerup and apply it's powers to the player
+        if (powerup.type) {
+
+            switch (powerup.type) {
+                case 'candy':
+                    console.log("touching candy")
+                    terrain.removePowerup(powerup);
+                    state.resetSpeedBonus();
+                    state.addPoints(10);
+                    break;
+                case 'stickyfloor':
+                    console.log("touching sticky floor")
+                    state.speedPenalty = true;
+                    break;
+                default:
+                    state.speedPenalty = false;
+                    break;
+            }
+
+        }
+        // No powerups on the current cell
+        else {
+            state.speedPenalty = false;
         }
 
         // If it's been less than 3 seconds, enable playerSpeed bonus, if not, disable
-        if (state.speedBonus) player.speedBonus = true;
-        else player.speedBonus = false;
+        player.speedBonus = state.speedBonus;
+        player.speedPenalty = state.speedPenalty;
 
 
         // If Antlion is behind the player, follow the paths to get closer to player, of not, target player directly

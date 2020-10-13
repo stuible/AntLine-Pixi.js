@@ -7,6 +7,8 @@ export default class {
         this._time = 0
 
         this.speedBonusStartTime = undefined
+
+        this.speedPenalty = false;
     }
 
     updateTime(delta){

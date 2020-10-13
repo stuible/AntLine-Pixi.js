@@ -5,7 +5,7 @@ import { isTouching } from '../helpers/collision'
 
 import Tunnel from './tunnel';
 import Wall from './wall';
-import { Candy } from './powerups';
+import { Candy, Stickyfloor } from './powerups';
 
 import maze from './maze';
 
@@ -64,15 +64,22 @@ export default class {
         return this.wallCells.find(cell => cell.y == y * this.gridSize && cell.x == x * this.gridSize)
     }
 
-    maybeGeneratePowerup(x, y){
+    maybeGeneratePowerup(x, y) {
         // Generates a number between 0 and 1
-        const randomNumber = Math.random(); 
+        const randomNumber = Math.random();
 
         // 5% Chance
-        if(randomNumber < 0.05){
-            console.log("Generated Powerup!")
+        if (randomNumber < 0.05) {
+            console.log("Generated Candy!")
             const powerup = this.createPowerupCell('candy', x, y)
-            this.powerupContainer.addChild(powerup);
+            this.powerupContainer.addChild(powerup.sprite);
+            this.powerupCells.push(powerup);
+        }
+        // 5% Chance
+        else if(randomNumber < 0.1){
+            console.log("Generated Sticky Floor")
+            const powerup = this.createPowerupCell('stickyfloor', x, y)
+            this.powerupContainer.addChild(powerup.sprite);
             this.powerupCells.push(powerup);
         }
     }
@@ -82,8 +89,8 @@ export default class {
         const mazePath = this.maze.generate((this.player.position.x + ((this.width + 400) / 2)) / this.gridSize);
 
         //  For each new cell of maze
-        if(mazePath) mazePath.forEach(cellData => {
-            if(!cellData.walls) return; // Make sure the cell has wall data or lets skip it for now
+        if (mazePath) mazePath.forEach(cellData => {
+            if (!cellData.walls) return; // Make sure the cell has wall data or lets skip it for now
 
             // Generate path / tunnel sprite for new cell and add display it on screen
             const cell = this.createPathCell(cellData.x, cellData.y)
@@ -121,23 +128,25 @@ export default class {
         if (mazePath.length > 0) {
             console.log(mazePath);
             this.prunePathCells();
-            this.pruneCandyCells();
+            this.prunePowerupCells();
         }
 
     }
 
     createPathCell(x, y) {
-        return new Tunnel({x: this.gridSize * x, y: this.gridSize * y, size: this.gridSize}).sprite;
+        return new Tunnel({ x: this.gridSize * x, y: this.gridSize * y, size: this.gridSize }).sprite;
     }
 
     createWallCell(x, y) {
-        return new Wall({x: this.gridSize * x, y: this.gridSize * y, size: this.gridSize}).sprite;
+        return new Wall({ x: this.gridSize * x, y: this.gridSize * y, size: this.gridSize }).sprite;
     }
 
     createPowerupCell(powerup, x, y) {
         switch (powerup) {
             case 'candy':
-                return new Candy({x: this.gridSize * x + (this.gridSize * 0.15), y: this.gridSize * y + (this.gridSize * 0.15), size: this.gridSize * 0.7}).sprite;
+                return new Candy({ x: this.gridSize * x + (this.gridSize * 0.15), y: this.gridSize * y + (this.gridSize * 0.15), size: this.gridSize * 0.7 });
+            case 'stickyfloor':
+                return new Stickyfloor({ x: this.gridSize * x + (this.gridSize * 0.15), y: this.gridSize * y + (this.gridSize * 0.15), size: this.gridSize * 0.7 });
             default:
                 return undefined;
         }
@@ -148,14 +157,14 @@ export default class {
         let xCutoff = this.player.position.x - (this.originalWidth / 2) - (this.gridSize * 2);
 
         let visibleWalls = this.wallCells.filter(cell => {
-            if(cell.x > xCutoff) return true;
+            if (cell.x > xCutoff) return true;
             else {
                 this.wallContainer.removeChild(cell);
             }
         })
 
         let visiblePaths = this.pathCells.filter(cell => {
-            if(cell.x > xCutoff) return true;
+            if (cell.x > xCutoff) return true;
             else {
                 this.tunnelContainer.removeChild(cell);
             }
@@ -166,14 +175,14 @@ export default class {
     }
 
     // Remove candy cells that the player has already passed and are behind them
-    pruneCandyCells(){
+    prunePowerupCells() {
         let xCutoff = this.player.position.x - (this.originalWidth / 2) - (this.gridSize * 2);
         console.log(xCutoff);
 
-        let visibleCandy = this.powerupCells.filter(cell => {
-            if(cell.x > xCutoff) return true;
+        let visibleCandy = this.powerupCells.filter(powerup => {
+            if (powerup.sprite.x > xCutoff) return true;
             else {
-                this.powerupContainer.removeChild(cell);
+                this.powerupContainer.removeChild(powerup.sprite);
             }
         })
 
@@ -182,14 +191,14 @@ export default class {
     }
 
     // Return powerup in powerup array by index
-    getPowerupByIndex(index){
+    getPowerupByIndex(index) {
         return this.powerupCells[index];
     }
 
-    // Remove sprite and array item of powerup by Index
-    removePowerupByIndex(index){
-        this.powerupContainer.removeChild(this.getPowerupByIndex(index));
-        this.powerupCells.splice(index, 1);
+    // Remove sprite and array item of powerup
+    removePowerup(powerup) {
+        this.powerupContainer.removeChild(powerup.sprite);
+        this.powerupCells.splice(this.powerupCells.findIndex(powerUpInArray => powerUpInArray == powerup), 1);
     }
 
     // Get bounding boxes for 2 sprites
@@ -199,10 +208,10 @@ export default class {
         return isTouching(aBox, bBox);
     }
 
-    // Returns index of powerup if input sprite is touching one
-    isTouchingPowerup(sprite){
-        for (let index = 0; index <  this.powerupCells.length; index++) {
-            if (this.rectsIntersect(this.powerupCells[index], sprite)) return index;
+    // Returns powerup object if input sprite is touching one
+    isTouchingPowerup(sprite) {
+        for (let index = 0; index < this.powerupCells.length; index++) {
+            if (this.rectsIntersect(this.powerupCells[index].sprite, sprite)) return this.powerupCells[index];
         }
         return false;
     }
