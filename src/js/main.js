@@ -1,6 +1,5 @@
 import * as PIXI from 'pixi.js'
 import keyboard from './controls/keyboard'
-import { cloneDeep } from 'lodash';
 
 import State from './state';
 
@@ -80,7 +79,7 @@ window.onload = () => {
         player.update(delta);
         antlion.update(delta);
 
-        let playerClone = cloneDeep(player.hitbox);
+        let playerClone = player.hitbox;
 
         if (downKey.isDown) {
             playerClone.y += player.speed;
