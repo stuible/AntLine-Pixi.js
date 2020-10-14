@@ -40,14 +40,7 @@ export default class {
     }
 
     calculateWalls() {
-        // let topCalcIndex = 0;
         this.path.forEach((cell, index) => {
-
-            // if (!cell.x > this.currentPathGeneratorIndex.x){
-            //     console.log("stip this cell: " + cell.x)
-            //     return;
-            // };
-
 
             const walls = {
                 top: false, bottom: false, left: false, right: false
@@ -67,11 +60,7 @@ export default class {
 
             this.updateMazeCellWalls(cell.x, cell.y, walls);
 
-            // topIndex = index;
-
         });
-
-        // this.pathCalcIndex += topIndex;
     }
 
     generatePath() {
