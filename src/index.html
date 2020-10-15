@@ -12,7 +12,7 @@
         <div id="ui">
             <div id="score"></div>
         </div>
-        <div id="game"></div>
+        <div id="game" class="overlay"></div>
     </main>
 
 
@@ -24,7 +24,7 @@
         transition: opacity 200ms linear;
     }
 
-    #game.gameover{
+    #game.overlay{
         opacity: 0.2;
     }
 
@@ -33,7 +33,7 @@
         font-size: 2em;
     }
 
-    #game-over {
+    #game-overlay {
         position: absolute;
         left: 0;
         width: 100%;

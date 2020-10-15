@@ -1,4 +1,5 @@
 import Highscore from './highscores';
+import createGame from '../createGame';
 
 import React from 'react';
 import ReactDom from 'react-dom'
@@ -17,28 +18,42 @@ export default class {
     }
 
     update() {
-        this.updateStore();
-        console.log('updating')
+        this.updateReact();
+        // console.log('updating')
     }
 
-    updateStore() {
-        ReactUI.setState({ score: this.state.score, gameOver: this.state.gameOver })
+    updateReact() {
+        ReactUI.setState({ score: this.state.score, gameOver: this.state.gameOver, gameStarted: this.state.gameStarted })
     }
 
     render() {
 
-        ReactDom.render(<UIComponent score={this.score} ref={ReactUI => { window.ReactUI = ReactUI }} />, this.rootElement);
+        ReactDom.render(<UIComponent state={this.state} ui={this} ref={ReactUI => { window.ReactUI = ReactUI }} />, this.rootElement);
     }
 }
 
 class UIComponent extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { score: 0, gameOver: false };
+        this.gameState = props.state
+        this.state = { score: 0, gameOver: false, gameStarted: false };
+
+        this.handleStartGame = this.handleStartGame.bind(this);
+        this.handleRestartGame = this.handleRestartGame.bind(this);
     }
 
     handleRestartGame() {
-        location.reload();
+        // location.reload();
+        this.gameState.game.destroy(true);
+        this.gameState.game = createGame(this.gameState, this.props.ui)
+        this.gameState.reset();
+        this.handleStartGame();
+        this.props.ui.update();
+    }
+    
+    handleStartGame(){
+        this.gameState.gameStarted = true;
+        document.querySelector('#game').classList.remove('overlay');
     }
 
     render() {
@@ -48,23 +63,33 @@ class UIComponent extends React.Component {
             </div>
         );
 
-        const ShowIfGameOver = props => {
+        const GameOverlay = props => {
             if (props.gameOver) {
                 return (
-                    <div id="game-over">
+                    <div id="game-overlay">
                         <div>Game Over</div>
                         <Highscore score={this.state.score} />
                         <button onClick={this.handleRestartGame}>Play Again</button>
                     </div>
                 )
             }
-            else return null;
+            else if (!props.gameStarted) return (
+                <div id="game-overlay">
+                    <div>Ant Line</div>
+                    <br/>
+                    <img src='/assets/Arrows.png' />
+                    <p>Use the arrow keys to run away from the Ant Lion as fast as you can!</p>
+                    <p>You may find things that both help and harm you along your way so watch out...</p>
+                    <button onClick={this.handleStartGame}>Start Game</button>
+                </div>
+            )
+            else return null
         }
 
         return (
             <div>
                 <ScoreComponent score={this.state.score} />
-                <ShowIfGameOver gameOver={this.state.gameOver} />
+                <GameOverlay gameOver={this.state.gameOver} gameStarted={this.state.gameStarted}/>
             </div>
 
         );
