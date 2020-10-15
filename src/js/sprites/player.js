@@ -41,8 +41,8 @@ export default class {
 
         this._speed = speed ? speed : 5;
 
-        this._speedBonusIncrease = this._speed * 1.4;
-        this._speedPenaltyDecrease = -(this._speed / 1.5);
+        this._speedBonusIncrease = this._speed * 1.3;
+        this._speedPenaltyDecrease = -(this._speed / 1.4);
     }
 
     isTouching(sprite) {
@@ -131,6 +131,7 @@ export default class {
     }
 
     move(direction) {
+        console.log(this.speed)
         switch (direction) {
             case "up":
                 this.y -= this.speed;

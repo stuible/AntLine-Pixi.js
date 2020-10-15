@@ -29,11 +29,12 @@ export default class {
         this._targetAngle = 0;
     }
 
-    update(delta) {
+    update(delta, speed) {
         this.rotateTowardsAngle();
         this.animator.enabled = true;
         this.animator.speed = this.speed;
         this.animator.update(delta);
+        this.speed = speed ? speed : this.speed;
     }
 
     moveToward(x, y){

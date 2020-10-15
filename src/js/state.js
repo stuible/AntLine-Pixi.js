@@ -90,13 +90,13 @@ export default class {
     get antlionSpeed() {
         switch (this.difficulty) {
             case 0:
-                return this.playerSpeed + 0.3;
+                return this.playerSpeed;
             case 1:
-                return this.playerSpeed + 0.4;
-            case 2:
                 return this.playerSpeed + 0.5;
-            case 3:
+            case 2:
                 return this.playerSpeed + 0.75;
+            case 3:
+                return this.playerSpeed + 1.5;
 
             default:
                 return 3

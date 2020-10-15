@@ -70,7 +70,7 @@ export default function (state, ui) {
 
         // Let player / antlion know this is a new frame
         player.update(delta, state.playerSpeed);
-        antlion.update(delta);
+        antlion.update(delta, state.antlionSpeed);
 
         let playerClone = player.hitbox;
 
