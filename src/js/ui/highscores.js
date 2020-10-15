@@ -64,7 +64,7 @@ export default class extends React.Component {
             if (!this.state.submitted && this.currentScoreLeaderboardWorthy()) {
                 return (
                     <div id="new-highscore">
-                        <label>Name</label><input type="text" onChange={event => this.handleNameInputChange(event)} value={this.state.name}></input>
+                        <label>Name</label><input type="text" onChange={event => this.handleNameInputChange(event)} value={this.state.name} placeholder="Ant Man"></input>
                         <button onClick={event => this.handleSubmitHighScore(event)}>Submit</button>
                     </div>
                 );
@@ -78,7 +78,7 @@ export default class extends React.Component {
                 <ol className="highscore-list">
                     {this.state.highscores.map((highscore, index) => (
                         <li key={index}>
-                            Name: {highscore.name} | Score: {highscore.score}
+                            <span>{highscore.name}</span> - Score: {highscore.score}
                         </li>
                     ))}
                 </ol>
