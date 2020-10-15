@@ -23,6 +23,16 @@ export default class extends React.Component {
 
     }
 
+    currentScoreLeaderboardWorthy(){
+        if(this.state.highscores.length < 5) return true;
+        let largerThanAtLeastOneEntry = false;
+        this.state.highscores.forEach(highscore => {
+            if(this.props.score > highscore.score) largerThanAtLeastOneEntry = true;
+        })
+        return largerThanAtLeastOneEntry;
+    }
+
+    // Save
     saveHighscores() {
         localStorage.set('highscores', this.state.highscores)
         localStorage.set('lastNameEntered', this.state.lastNameEntered)
@@ -36,6 +46,13 @@ export default class extends React.Component {
         let newHighscores = this.state.highscores;
         newHighscores.push({ name: this.state.name, score: this.props.score })
 
+        // Sort by score
+        newHighscores.sort(function (a, b) {
+            return b.score - a.score;
+        });
+
+        newHighscores = newHighscores.slice(0, 5)
+
         this.setState({ lastNameEntered: this.state.name, highscores: newHighscores }, () => {
             this.saveHighscores();
         });
@@ -44,7 +61,7 @@ export default class extends React.Component {
 
     render() {
         const NewHighscore = (props) => {
-            if (!this.state.submitted && this.props.score > 5) {
+            if (!this.state.submitted && this.currentScoreLeaderboardWorthy()) {
                 return (
                     <div id="new-highscore">
                         <label>Name</label><input type="text" onChange={event => this.handleNameInputChange(event)} value={this.state.name}></input>
