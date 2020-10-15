@@ -17,6 +17,20 @@ module.exports = {
         filename: 'game.min.[hash:8].js',
     },
     target: 'web',
+    // define babel loader
+    module: {
+        rules: [{
+            test: /\.js$/,
+            exclude: /node_modules/,
+            use: {
+                loader: 'babel-loader',
+                options: {
+                    presets: ['@babel/preset-react']
+                }
+            }
+        }
+        ]
+    },
 
     plugins: [
         //Copy all resources in the Src / assets directory to dist / assets

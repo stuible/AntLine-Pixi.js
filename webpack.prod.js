@@ -14,7 +14,8 @@ module.exports = merge(common, {
                         ['@babel/preset-env', {
                             'corejs': '3',
                             'useBuiltIns': 'usage'
-                        }]
+                        }],
+                        '@babel/preset-react'
                     ],
                     plugins: ['@babel/plugin-transform-runtime']
                 }
