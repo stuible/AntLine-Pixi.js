@@ -52,4 +52,55 @@ export default class {
     get speedBonus() {
         return this.timeSinceSpeedBonusStarted < 3000;
     }
+
+    get difficulty() {
+        if (this._time > 120000) {
+            console.log('hardest');
+            return 3
+        }
+        else if (this._time > 60000) {
+            console.log('medium');
+            return 2
+        }
+        else if (this._time > 5000) {
+            console.log('easy');
+            return 1
+        }
+        console.log('start');
+        return 0
+    }
+
+    get antlionSpeed() {
+        switch (this.difficulty) {
+            case 0:
+                return this.playerSpeed + 0.3;
+            case 1:
+                return this.playerSpeed + 0.4;
+            case 2:
+                return this.playerSpeed + 0.5;
+            case 3:
+                return this.playerSpeed + 0.75;
+
+            default:
+                return 3
+                break;
+        }
+    }
+
+    get playerSpeed() {
+        switch (this.difficulty) {
+            case 0:
+                return 3
+            case 1:
+                return 4
+            case 2:
+                return 5
+            case 3:
+                return 7
+
+            default:
+                return 3
+                break;
+        }
+    }
 }

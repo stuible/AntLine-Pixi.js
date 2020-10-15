@@ -41,7 +41,7 @@ export default class {
 
         this._speed = speed ? speed : 5;
 
-        this._speedBonusIncrease = 5;
+        this._speedBonusIncrease = this._speed * 1.4;
         this._speedPenaltyDecrease = -(this._speed / 1.5);
     }
 
@@ -108,10 +108,11 @@ export default class {
         this.hitbox.width = w;
     }
 
-    update(delta) {
+    update(delta, speed) {
         this.animate(delta);
         this.rotateTowardsAngle();
         this.directions = [];
+        this._speed = speed ? speed : this._speed;
     }
 
     animate(delta) {

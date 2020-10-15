@@ -33,10 +33,10 @@ export default function (state, ui) {
     const camera = new Camera(app);
 
     // Player
-    const player = new Player({ speed: 5, state: state });
+    const player = new Player({ speed: state.playerSpeed, state: state });
 
     // Ant Lion
-    const antlion = new Antlion({ speed: 5.5 });
+    const antlion = new Antlion({ speed: state.antlionSpeed });
 
     // Terrain
     const terrain = new Terrain({ player: player, width: app.renderer.width, height: app.renderer.height * 2, grid: 100 });
@@ -69,7 +69,7 @@ export default function (state, ui) {
         terrain.update();
 
         // Let player / antlion know this is a new frame
-        player.update(delta);
+        player.update(delta, state.playerSpeed);
         antlion.update(delta);
 
         let playerClone = player.hitbox;
@@ -102,15 +102,6 @@ export default function (state, ui) {
             document.querySelector('#game').classList.add('overlay');
 
             ui.update(); //update UI one last time
-            // alert("YOU LOSE! SCORE: " + state.score);
-            // console.log("YOU LOSE! SCORE: " + state.score)
-
-            // if (confirm("Game Over !  |  SCORE: " + state.score + "  |  Play Again?")) {
-            //     location.reload();
-            // } else {
-            //     state.paused = true;
-            // }
-
         }
 
         // Get the index of the powerup that the player is touching (if it is)

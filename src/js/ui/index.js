@@ -27,7 +27,6 @@ export default class {
     }
 
     render() {
-
         ReactDom.render(<UIComponent state={this.state} ui={this} ref={ReactUI => { window.ReactUI = ReactUI }} />, this.rootElement);
     }
 }
@@ -67,7 +66,8 @@ class UIComponent extends React.Component {
             if (props.gameOver) {
                 return (
                     <div id="game-overlay">
-                        <div>Game Over</div>
+                        <div className="title" style={{fontSize: '2em'}}>Ant Line</div>
+                        <h1 style={{fontSize: '1.25em', marginBottom: 0}}>Game Over :(</h1>
                         <Highscore score={this.state.score} />
                         <button onClick={this.handleRestartGame}>Play Again</button>
                     </div>

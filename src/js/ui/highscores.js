@@ -73,7 +73,7 @@ export default class extends React.Component {
 
         return (
             <div>
-                <h2 className="leaderboard-title">High Scores</h2>
+                <h2 className="leaderboard-title" style={{fontSize: '1em',marginTop: '0.5em', textDecoration: 'underline'}}>High Scores</h2>
                 {NewHighscore()}
                 <ol className="highscore-list">
                     {this.state.highscores.map((highscore, index) => (
