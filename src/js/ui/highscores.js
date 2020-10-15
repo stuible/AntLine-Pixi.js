@@ -43,27 +43,28 @@ export default class extends React.Component {
     }
 
     render() {
-        // const NewHighscore = (props) => (
-        //     <div id="new-highscore">
-        //         <label>Name</label><input type="text" onChange={event => this.handleNameInputChange(event)}></input>
-        //         <button onClick={event => this.handleSubmitHighScore(event)}>Submit</button>
-        //     </div>
-        // );
+        const NewHighscore = (props) => {
+            if (!this.state.submitted && this.props.score > 5) {
+                return (
+                    <div id="new-highscore">
+                        <label>Name</label><input type="text" onChange={event => this.handleNameInputChange(event)} value={this.state.name}></input>
+                        <button onClick={event => this.handleSubmitHighScore(event)}>Submit</button>
+                    </div>
+                );
+            }
+        }
 
         return (
             <div>
                 <h2 className="leaderboard-title">High Scores</h2>
-                <div id="new-highscore">
-                    <label>Name</label><input type="text" onChange={event => this.handleNameInputChange(event)} value={this.state.name}></input>
-                    <button onClick={event => this.handleSubmitHighScore(event)}>Submit</button>
-                </div>
-                <ul className="highscore-list">
+                {NewHighscore()}
+                <ol className="highscore-list">
                     {this.state.highscores.map((highscore, index) => (
                         <li key={index}>
                             Name: {highscore.name} | Score: {highscore.score}
                         </li>
                     ))}
-                </ul>
+                </ol>
             </div>
         );
     }

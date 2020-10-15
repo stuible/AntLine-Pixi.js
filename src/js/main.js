@@ -106,6 +106,8 @@ window.onload = () => {
         if (player.isTouching(antlion.sprite) && !state.gameOver) {
             state.gameOver = true;
             state.paused = true;
+            document.querySelector('#game').classList.add('gameover');
+
             ui.update(); //update UI one last time
             // alert("YOU LOSE! SCORE: " + state.score);
             // console.log("YOU LOSE! SCORE: " + state.score)

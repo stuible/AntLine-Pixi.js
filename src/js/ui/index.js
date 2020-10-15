@@ -37,6 +37,10 @@ class UIComponent extends React.Component {
         this.state = { score: 0, gameOver: false };
     }
 
+    handleRestartGame() {
+        location.reload();
+    }
+
     render() {
         const ScoreComponent = (props) => (
             <div id="score">
@@ -44,9 +48,15 @@ class UIComponent extends React.Component {
             </div>
         );
 
-        const ShowHighscoreIfGameOver = props => {
-            if(props.gameOver){
-                return <Highscore score={this.state.score}/>
+        const ShowIfGameOver = props => {
+            if (props.gameOver) {
+                return (
+                    <div id="game-over">
+                        <div>Game Over</div>
+                        <Highscore score={this.state.score} />
+                        <button onClick={this.handleRestartGame}>Play Again</button>
+                    </div>
+                )
             }
             else return null;
         }
@@ -54,7 +64,7 @@ class UIComponent extends React.Component {
         return (
             <div>
                 <ScoreComponent score={this.state.score} />
-                <ShowHighscoreIfGameOver gameOver={this.state.gameOver} />
+                <ShowIfGameOver gameOver={this.state.gameOver} />
             </div>
 
         );

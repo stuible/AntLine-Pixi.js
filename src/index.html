@@ -21,11 +21,23 @@
     #game {
         height: 500px;
         box-sizing: border-box;
+        transition: opacity 200ms linear;
+    }
+
+    #game.gameover{
+        opacity: 0.2;
     }
 
     #ui {
         text-align: center;
         font-size: 2em;
+    }
+
+    #game-over {
+        position: absolute;
+        left: 0;
+        width: 100%;
+        z-index: 10;
     }
 
     /* #game {
