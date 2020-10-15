@@ -68,15 +68,15 @@ export default class {
         // Generates a number between 0 and 1
         const randomNumber = Math.random();
 
-        // 5% Chance
+        // 5% Chance of a Candy
         if (randomNumber < 0.05) {
             console.log("Generated Candy!")
             const powerup = this.createPowerupCell('candy', x, y)
             this.powerupContainer.addChild(powerup.sprite);
             this.powerupCells.push(powerup);
         }
-        // 5% Chance
-        else if(randomNumber < 0.1){
+        // 5% Chance of a sticky floor but there there must be a candy spawned first
+        else if(randomNumber < 0.1 && this.powerupCells.length > 0){
             console.log("Generated Sticky Floor")
             const powerup = this.createPowerupCell('stickyfloor', x, y)
             this.powerupContainer.addChild(powerup.sprite);
@@ -99,22 +99,22 @@ export default class {
 
             // Generate wall sprites as well
             if (cellData.walls.top) {
-                const wall = this.createWallCell(cellData.x, cellData.y - 1);
+                const wall = this.createWallCell(cellData.x, cellData.y - 1, ['bottom']);
                 this.wallContainer.addChild(wall);
                 this.wallCells.push(wall);
             }
             if (cellData.walls.bottom) {
-                const wall = this.createWallCell(cellData.x, cellData.y + 1);
+                const wall = this.createWallCell(cellData.x, cellData.y + 1, ['top']);
                 this.wallContainer.addChild(wall);
                 this.wallCells.push(wall);
             }
             if (cellData.walls.left) {
-                const wall = this.createWallCell(cellData.x - 1, cellData.y);
+                const wall = this.createWallCell(cellData.x - 1, cellData.y, ['right']);
                 this.wallContainer.addChild(wall);
                 this.wallCells.push(wall);
             }
             if (cellData.walls.right) {
-                const wall = this.createWallCell(cellData.x + 1, cellData.y);
+                const wall = this.createWallCell(cellData.x + 1, cellData.y, ['left']);
                 this.wallContainer.addChild(wall);
                 this.wallCells.push(wall);
             }
@@ -137,8 +137,8 @@ export default class {
         return new Tunnel({ x: this.gridSize * x, y: this.gridSize * y, size: this.gridSize }).sprite;
     }
 
-    createWallCell(x, y) {
-        return new Wall({ x: this.gridSize * x, y: this.gridSize * y, size: this.gridSize }).sprite;
+    createWallCell(x, y, sides) {
+        return new Wall({ x: this.gridSize * x, y: this.gridSize * y, size: this.gridSize, sides: sides }).sprite;
     }
 
     createPowerupCell(powerup, x, y) {

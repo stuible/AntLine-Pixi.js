@@ -6,7 +6,7 @@ import { Rotation, Animation } from './utils';
 
 export default class {
     constructor({ speed, state }) {
-        this.sprite = PIXI.Sprite.from("assets/ant2-2x.png");
+        this.sprite = PIXI.Sprite.from("assets/ant/ant-2.png");
         this.sprite.anchor.set(0.5);
         this.sprite.width = 50;
         this.sprite.height = 50;
@@ -15,10 +15,10 @@ export default class {
 
         this.animator = new Animation(this.sprite, {
             textures: [
-                'assets/ant/Ant1@2x.png',
-                'assets/ant/Ant2@2x.png',
-                'assets/ant/Ant3@2x.png',
-                'assets/ant/Ant4@2x.png'
+                'assets/ant/ant-1.png',
+                'assets/ant/ant-2.png',
+                'assets/ant/ant-3.png',
+                'assets/ant/ant-4.png'
             ]
         });
 

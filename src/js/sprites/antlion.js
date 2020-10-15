@@ -4,13 +4,22 @@ import { Rotation, Animation } from './utils';
 
 export default class {
     constructor({ speed }) {
-        this.sprite = PIXI.Sprite.from("assets/Ant Lion-1.png");
+        this.sprite = PIXI.Sprite.from('assets/antlion/antlion-4.png');
         this.sprite.anchor.set(0.5);
         this.sprite.width = 75;
         this.sprite.height = 75;
         this.sprite.y = 350;
         this.sprite.x = -400;
-        this.sprite.tint = 0xC29D00;
+        // this.sprite.tint = 0xC29D00;
+
+        this.animator = new Animation(this.sprite, {
+            textures: [
+                'assets/antlion/antlion-1.png',
+                'assets/antlion/antlion-2.png',
+                'assets/antlion/antlion-3.png',
+                'assets/antlion/antlion-4.png',
+            ]
+        });
 
         this.rotator = new Rotation(this.sprite);
         this.directions = [];
@@ -22,6 +31,9 @@ export default class {
 
     update(delta) {
         this.rotateTowardsAngle();
+        this.animator.enabled = true;
+        this.animator.speed = this.speed;
+        this.animator.update(delta);
     }
 
     moveToward(x, y){
