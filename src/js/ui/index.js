@@ -23,8 +23,9 @@ export default class {
     }
 
     updateReact() {
-        ReactUI.setState({ score: this.state.score, gameOver: this.state.gameOver, gameStarted: this.state.gameStarted })
+        ReactUI.setState({ score: this.state.score, gameOver: this.state.gameOver, gameStarted: this.state.gameStarted, difficulty: this.state.difficultyString })
     }
+    
 
     render() {
         ReactDom.render(<UIComponent state={this.state} ui={this} ref={ReactUI => { window.ReactUI = ReactUI }} />, this.rootElement);
@@ -35,7 +36,7 @@ class UIComponent extends React.Component {
     constructor(props) {
         super(props);
         this.gameState = props.state
-        this.state = { score: 0, gameOver: false, gameStarted: false };
+        this.state = { score: 0, gameOver: false, gameStarted: false, difficulty: '' };
 
         this.handleStartGame = this.handleStartGame.bind(this);
         this.handleRestartGame = this.handleRestartGame.bind(this);
@@ -49,25 +50,31 @@ class UIComponent extends React.Component {
         this.handleStartGame();
         this.props.ui.update();
     }
-    
-    handleStartGame(){
+
+    handleStartGame() {
         this.gameState.gameStarted = true;
         document.querySelector('#game').classList.remove('overlay');
     }
 
     render() {
-        const ScoreComponent = (props) => (
-            <div id="score">
-                {'< ' + props.score + ' >'}
+        const HUDComponent = (props) => (
+            <div id="HUD">
+                <div id="difficulty">
+                    {'Difficulty: ' + props.difficulty}
+                </div>
+                <div id="score">
+                    {'< ' + props.score + ' >'}
+                </div>
             </div>
+
         );
 
         const GameOverlay = props => {
             if (props.gameOver) {
                 return (
                     <div id="game-overlay">
-                        <div className="title" style={{fontSize: '2em'}}>Ant Line</div>
-                        <h1 style={{fontSize: '1.25em', marginBottom: 0}}>Game Over :(</h1>
+                        <div className="title" style={{ fontSize: '2em' }}>Ant Line</div>
+                        <h1 style={{ fontSize: '1.25em', marginBottom: 0 }}>Game Over :(</h1>
                         <Highscore score={this.state.score} />
                         <button onClick={this.handleRestartGame}>Play Again</button>
                     </div>
@@ -75,10 +82,11 @@ class UIComponent extends React.Component {
             }
             else if (!props.gameStarted) return (
                 <div id="game-overlay">
-                    <div className="title" style={{fontSize: '3em'}}>Ant Line</div>
-                    <br/>
+                    <div className="title" style={{ fontSize: '3em' }}>Ant Line</div>
+                    <br />
                     <img src='/assets/Arrows.png' />
                     <p>Use the arrow keys to run away from the Ant Lion as fast as you can!</p>
+                    <p>The Game will start slow but get harder.</p>
                     <p>You may find things that both help and harm you along your way so watch out...</p>
                     <button onClick={this.handleStartGame}>Start Game</button>
                 </div>
@@ -88,8 +96,8 @@ class UIComponent extends React.Component {
 
         return (
             <div>
-                <ScoreComponent score={this.state.score} />
-                <GameOverlay gameOver={this.state.gameOver} gameStarted={this.state.gameStarted}/>
+                <HUDComponent score={this.state.score} difficulty={this.state.difficulty}/>
+                <GameOverlay gameOver={this.state.gameOver} gameStarted={this.state.gameStarted} />
             </div>
 
         );

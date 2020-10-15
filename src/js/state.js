@@ -53,16 +53,33 @@ export default class {
         return this.timeSinceSpeedBonusStarted < 3000;
     }
 
+    get difficultyString() {
+        switch (this.difficulty) {
+            case 0:
+                return 'Easy';
+            case 1:
+                return 'Less Easy';
+            case 2:
+                return 'Getting Harder';
+            case 3:
+                return 'Hardest';
+
+            default:
+                return 3
+                break;
+        }
+    }
+
     get difficulty() {
-        if (this._time > 120000) {
+        if (this._time > 120000) { // After 2 minutes
             console.log('hardest');
             return 3
         }
-        else if (this._time > 60000) {
+        else if (this._time > 60000) { // After 1 minute
             console.log('medium');
             return 2
         }
-        else if (this._time > 5000) {
+        else if (this._time > 5000) { // After 5 seconds
             console.log('easy');
             return 1
         }
