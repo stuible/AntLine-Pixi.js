@@ -59,7 +59,7 @@ class UIComponent extends React.Component {
     render() {
         const ScoreComponent = (props) => (
             <div id="score">
-                | {props.score} |
+                {'< ' + props.score + ' >'}
             </div>
         );
 
@@ -75,7 +75,7 @@ class UIComponent extends React.Component {
             }
             else if (!props.gameStarted) return (
                 <div id="game-overlay">
-                    <div>Ant Line</div>
+                    <div className="title" style={{fontSize: '3em'}}>Ant Line</div>
                     <br/>
                     <img src='/assets/Arrows.png' />
                     <p>Use the arrow keys to run away from the Ant Lion as fast as you can!</p>

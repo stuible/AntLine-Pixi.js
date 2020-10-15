@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@700&family=Coming+Soon&display=swap"
+        rel="stylesheet">
     <title>Ant Line</title>
 </head>
 
@@ -18,13 +20,36 @@
 
 </body>
 <style>
+    body {
+        font-size: 16px;
+        font-family: 'Coming Soon', cursive;
+    }
+
+    p {
+        font-size: 0.55em;
+    }
+
+    button {
+        border: dashed grey 2px;
+        padding: 1em;
+        border-radius: 1em;
+        font-family: 'Cabin Sketch', cursive;
+        font-size: 0.5em;
+        background-color: aliceblue;
+        cursor: pointer;
+    }
+
+    .title {
+        font-family: 'Cabin Sketch', cursive;
+    }
+
     #game {
         height: 500px;
         box-sizing: border-box;
         transition: opacity 200ms linear;
     }
 
-    #game.overlay{
+    #game.overlay {
         opacity: 0.2;
     }
 
